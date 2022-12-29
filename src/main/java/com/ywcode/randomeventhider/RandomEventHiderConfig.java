@@ -273,17 +273,6 @@ public interface RandomEventHiderConfig extends Config
 		return false;
 	}
 
-	@ConfigItem(//TEST:
-			keyName = "hideOtherBenny",
-			name = "Hide others' Benny",
-			description = "Hide Benny as test",
-			position = 23,
-			section = othersRandomsCategory
-	)
-	default boolean hideOtherBenny() {
-		return false;
-	}
-
 	@ConfigItem(
 			keyName = "hideOwnBeekeeper",
 			name = "Hide your own Beekeeper",
@@ -291,7 +280,6 @@ public interface RandomEventHiderConfig extends Config
 			position = 0,
 			section = ownRandomsCategory
 	)
-
 	default boolean hideOwnBeekeeper() {
 		return false;
 	}
@@ -535,17 +523,6 @@ public interface RandomEventHiderConfig extends Config
 			section = ownRandomsCategory
 	)
 	default boolean hideOwnSurpriseExam() {
-		return false;
-	}
-
-	@ConfigItem(//TEST:
-			keyName = "hideOwnBenny",
-			name = "Hide own Benny",
-			description = "Hide Benny and other random event npcs",
-			position = 23,
-			section = ownRandomsCategory
-	)
-	default boolean hideOwnBenny() {
 		return false;
 	}
 }

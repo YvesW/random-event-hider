@@ -23,8 +23,6 @@ import java.util.*;
 		tags = {"random event,hider,random event hider,ra hider"}
 )
 
-//TODO: remove tests IN ALL FILES INCLUDING CONFIG (ctrl+f TEST:)
-
 public class RandomEventHiderPlugin extends Plugin {
 	private static final Set<Integer> EVENT_NPCS = ImmutableSet.of(
 			NpcID.BEE_KEEPER_6747,
@@ -49,8 +47,7 @@ public class RandomEventHiderPlugin extends Plugin {
 			NpcID.RICK_TURPENTINE, NpcID.RICK_TURPENTINE_376,
 			NpcID.SANDWICH_LADY,
 			NpcID.SERGEANT_DAMIEN_6743,
-			NpcID.STRANGE_PLANT,//PM potentially changes into a game object instead of an NPC after a while? Not sure tbh, just a speculation. Haven't been able to test it yet, but seems unlikely.
-			5216 //TEST: benny test varrock square
+			NpcID.STRANGE_PLANT //PM potentially changes into a game object instead of an NPC after a while? Not sure tbh, just a speculation. Haven't been able to test it yet, but seems unlikely.
 	);
 
 	private static final Set<Integer> FROGS_NPCS = ImmutableSet.of(
@@ -103,8 +100,6 @@ public class RandomEventHiderPlugin extends Plugin {
 	private boolean hideOwnSandwichLady;
 	private boolean hideOwnStrangePlant;
 	private boolean hideOwnSurpriseExam;
-	private boolean hideOwnBenny; //TEST: remove test
-	private boolean hideOtherBenny; //TEST: remove test
 	/* Originally wrote this thinking I'd separate 2D elements and model, but later opted not to do it.
 	private boolean hideOtherBeekeeper2D;
 	private boolean hideOtherCaptArnav2D;
@@ -233,8 +228,6 @@ public class RandomEventHiderPlugin extends Plugin {
 		hideOwnSandwichLady = config.hideOwnSandwichLady();
 		hideOwnStrangePlant = config.hideOwnStrangePlant();
 		hideOwnSurpriseExam = config.hideOwnSurpriseExam();
-		hideOwnBenny = config.hideOwnBenny(); //TEST: remove test
-		hideOtherBenny = config.hideOtherBenny(); //TEST: remove test
 		/* Originally wrote this thinking I'd separate 2D elements and model, but later opted not to do it.
 		hideOtherBeekeeper2D = config.hideOtherBeekeeper2D();
 		hideOtherCaptArnav2D = config.hideOtherCaptArnav2D();
@@ -282,8 +275,6 @@ public class RandomEventHiderPlugin extends Plugin {
 		hideOwnSandwichLady2D = config.hideOwnSandwichLady2D();
 		hideOwnStrangePlant2D = config.hideOwnStrangePlant2D();
 		hideOwnSurpriseExam2D = config.hideOwnSurpriseExam2D();
-		hideOwnBenny2D = config.hideOwnBenny2D();
-		hideOtherBenny2D = config.hideOtherBenny2D();
 		 */
 	}
 
@@ -460,8 +451,6 @@ public class RandomEventHiderPlugin extends Plugin {
 					return hideOwnRickTurpentine;
 				case NpcID.STRANGE_PLANT:
 					return hideOwnStrangePlant;
-				case 5216:
-					return hideOwnBenny;//TEST: benny test varrock square
 			}
 		} else if (!OwnEvent) {
 			switch (id) {
@@ -525,8 +514,6 @@ public class RandomEventHiderPlugin extends Plugin {
 					return hideOtherRickTurpentine;
 				case NpcID.STRANGE_PLANT:
 					return hideOtherStrangePlant;
-				case 5216:
-					return hideOtherBenny;//TEST: benny test varrock square
 			}
 		}
 		return false;
