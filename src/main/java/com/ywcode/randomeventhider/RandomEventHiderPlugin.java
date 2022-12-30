@@ -22,6 +22,8 @@ import java.util.*;
 		description = "Adds the ability to hide specific random events that interact with you or with other players.",
 		tags = {"random event,hider,random event hider,ra hider"}
 )
+//TODO: maybe also mute sounds! like whistle from dwarf, sploosh van frogs, evil bob sound
+//TODO: maybe also hide the poof when dismissed if this is visible?
 
 public class RandomEventHiderPlugin extends Plugin {
 	private static final Set<Integer> EVENT_NPCS = ImmutableSet.of(
@@ -46,8 +48,7 @@ public class RandomEventHiderPlugin extends Plugin {
 			NpcID.QUIZ_MASTER_6755,
 			NpcID.RICK_TURPENTINE, NpcID.RICK_TURPENTINE_376,
 			NpcID.SANDWICH_LADY,
-			NpcID.SERGEANT_DAMIEN_6743,
-			NpcID.STRANGE_PLANT //PM potentially changes into a game object instead of an NPC after a while? Not sure tbh, just a speculation. Haven't been able to test it yet, but seems unlikely.
+			NpcID.SERGEANT_DAMIEN_6743
 	);
 
 	private static final Set<Integer> FROGS_NPCS = ImmutableSet.of(
@@ -75,7 +76,6 @@ public class RandomEventHiderPlugin extends Plugin {
 	private boolean hideOtherQuizMaster;
 	private boolean hideOtherRickTurpentine;
 	private boolean hideOtherSandwichLady;
-	private boolean hideOtherStrangePlant;
 	private boolean hideOtherSurpriseExam;
 	private boolean hideOwnBeekeeper;
 	private boolean hideOwnCaptArnav;
@@ -98,7 +98,7 @@ public class RandomEventHiderPlugin extends Plugin {
 	private boolean hideOwnQuizMaster;
 	private boolean hideOwnRickTurpentine;
 	private boolean hideOwnSandwichLady;
-	private boolean hideOwnStrangePlant;
+	private boolean hideAllStrangePlant;
 	private boolean hideOwnSurpriseExam;
 
 	private LinkedHashMap<Integer, Integer> ownRandomsMap = new LinkedHashMap<Integer, Integer>();
@@ -155,7 +155,6 @@ public class RandomEventHiderPlugin extends Plugin {
 		hideOtherQuizMaster = config.hideOtherQuizMaster();
 		hideOtherRickTurpentine = config.hideOtherRickTurpentine();
 		hideOtherSandwichLady = config.hideOtherSandwichLady();
-		hideOtherStrangePlant = config.hideOtherStrangePlant();
 		hideOtherSurpriseExam = config.hideOtherSurpriseExam();
 		hideOwnBeekeeper = config.hideOwnBeekeeper();
 		hideOwnCaptArnav = config.hideOwnCaptArnav();
@@ -178,7 +177,7 @@ public class RandomEventHiderPlugin extends Plugin {
 		hideOwnQuizMaster = config.hideOwnQuizMaster();
 		hideOwnRickTurpentine = config.hideOwnRickTurpentine();
 		hideOwnSandwichLady = config.hideOwnSandwichLady();
-		hideOwnStrangePlant = config.hideOwnStrangePlant();
+		hideAllStrangePlant = config.hideAllStrangePlant();
 		hideOwnSurpriseExam = config.hideOwnSurpriseExam();
 	}
 
@@ -207,7 +206,7 @@ public class RandomEventHiderPlugin extends Plugin {
 				//Frogs are the only event that spawn multiple Npcs. Not sure if they all interact with the player (most likely not; haven't been able to test yet though).
 				//Don't add them to otherRandomMap if there's already a frog targeting the player to not hide the other frog Npcs if "Hide own kiss the frog" is enabled.
 				//Will also hide other's frogs if both you and another player have the 'kiss the frog' event at the exact same time, and you only got your own hidden; or it will not hide theirs if you only got 'hide other kiss the frog' enabled. However, we accept that.
-				if (!((FROGS_NPCS.contains(((NPC) source).getId())) &&
+				if (!( (FROGS_NPCS.contains(((NPC) source).getId())) &&
 						(ownRandomsMap.containsValue(NpcID.FROG_5429) ||
 								ownRandomsMap.containsValue(NpcID.FROG_5430) ||
 								ownRandomsMap.containsValue(NpcID.FROG_5431) ||
@@ -245,7 +244,9 @@ public class RandomEventHiderPlugin extends Plugin {
 
 	@VisibleForTesting
 	boolean shouldDraw(Renderable renderable, boolean drawingUI) {
-		if (renderable instanceof NPC && EVENT_NPCS.contains(((NPC) renderable).getId()) && !client.isInInstancedRegion()) { //(Most) NPCs have separate IDs for their overworld counterparts (in contrast to their random event/instanced ones), but just to be sure, let's skip the instances.
+		if (renderable instanceof NPC &&
+				(EVENT_NPCS.contains(((NPC) renderable).getId()) || ((NPC) renderable).getId() == NpcID.STRANGE_PLANT)
+				&& !client.isInInstancedRegion()) { //(Most) NPCs have separate IDs for their overworld counterparts (in contrast to their random event/instanced ones), but just to be sure, let's skip the instances.
 			//Randoms might actually not be an instance though... Currently I can only find the maze random event on the map (which doesn't contain any EVENT_NPCS!)...
 			//However, it should still be fine: Beekeeper uses a different Id, Sergeant Damien uses a different Id, Evil Bob uses a different Id,
 			//the Freaky Forester uses a different Id, Leo uses a different Id, the Frog random does not teleport the played anymore,
@@ -287,6 +288,10 @@ public class RandomEventHiderPlugin extends Plugin {
 						otherRandomsMap.containsValue(NpcID.FROG)) {
 					return !shouldHide(npc.getId(), false);
 				}
+			}
+			//Strange plant does not interact with any person, so we'll hide them all if hideOwnStrangePlant is enabled.
+			if (((NPC) renderable).getId() == NpcID.STRANGE_PLANT) {
+				return !hideAllStrangePlant;
 			}
 		}
 		return true;
@@ -353,8 +358,6 @@ public class RandomEventHiderPlugin extends Plugin {
 				case NpcID.RICK_TURPENTINE:
 				case NpcID.RICK_TURPENTINE_376:
 					return hideOwnRickTurpentine;
-				case NpcID.STRANGE_PLANT:
-					return hideOwnStrangePlant;
 			}
 		} else if (!OwnEvent) {
 			switch (id) {
@@ -416,8 +419,6 @@ public class RandomEventHiderPlugin extends Plugin {
 				case NpcID.RICK_TURPENTINE:
 				case NpcID.RICK_TURPENTINE_376:
 					return hideOtherRickTurpentine;
-				case NpcID.STRANGE_PLANT:
-					return hideOtherStrangePlant;
 			}
 		}
 		return false;

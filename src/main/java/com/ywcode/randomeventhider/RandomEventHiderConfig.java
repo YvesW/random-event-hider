@@ -252,21 +252,10 @@ public interface RandomEventHiderConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "hideOtherStrangePlant",
-			name = "Hide others' Strange Plant",
-			description = "Hide the Strange Plant random event of other players",
-			position = 21,
-			section = othersRandomsCategory
-	)
-	default boolean hideOtherStrangePlant() {
-		return false;
-	}
-
-	@ConfigItem(
 			keyName = "hideOtherSurpriseExam",
 			name = "Hide others' Surprise Exam",
 			description = "Hide the Surprise Exam/Dunce random event of other players",
-			position = 22,
+			position = 21,
 			section = othersRandomsCategory
 	)
 	default boolean hideOtherSurpriseExam() {
@@ -504,14 +493,15 @@ public interface RandomEventHiderConfig extends Config
 		return false;
 	}
 
+	//Strange plant does not interact with any person, so we'll hide them all if hideAllStrangePlant is enabled.
 	@ConfigItem(
-			keyName = "hideOwnStrangePlant",
-			name = "Hide your own Strange Plant",
-			description = "Hide your own Strange Plant random event",
+			keyName = "hideAllStrangePlant",
+			name = "Hide ALL Strange Plants",
+			description = "Hide ALL Strange Plant random events, both your own events and the events of other players",
 			position = 21,
 			section = ownRandomsCategory
 	)
-	default boolean hideOwnStrangePlant() {
+	default boolean hideAllStrangePlant() {
 		return false;
 	}
 
