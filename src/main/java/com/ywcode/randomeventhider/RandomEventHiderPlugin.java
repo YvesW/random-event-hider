@@ -329,9 +329,9 @@ public class RandomEventHiderPlugin extends Plugin {
 				case NpcID.MYSTERIOUS_OLD_MAN_6751:
 					return hideOwnMysteriousOldMan;
 				case NpcID.MYSTERIOUS_OLD_MAN_6752:
-					return hideOwnMaze; //TODO: find out if 6752 or 6753 is mime or maze
+					return hideOwnMaze; //6752 is maze
 				case NpcID.MYSTERIOUS_OLD_MAN_6753:
-					return hideOwnMime; //TODO: find out if 6752 or 6753 is mime or maze
+					return hideOwnMime; //6753 is mime
 				case NpcID.QUIZ_MASTER_6755:
 					return hideOwnQuizMaster;
 				case NpcID.DUNCE_6749:
@@ -390,9 +390,9 @@ public class RandomEventHiderPlugin extends Plugin {
 				case NpcID.MYSTERIOUS_OLD_MAN_6751:
 					return hideOtherMysteriousOldMan;
 				case NpcID.MYSTERIOUS_OLD_MAN_6752:
-					return hideOtherMaze; //TODO: find out if 6752 or 6753 is mime or maze
+					return hideOtherMaze; //6752 is maze https://discord.com/channels/177206626514632704/269673599554551808/1059302464622448650
 				case NpcID.MYSTERIOUS_OLD_MAN_6753:
-					return hideOtherMime; //TODO: find out if 6752 or 6753 is mime or maze
+					return hideOtherMime; //6753 is mime https://discord.com/channels/177206626514632704/269673599554551808/1059302464622448650
 				case NpcID.QUIZ_MASTER_6755:
 					return hideOtherQuizMaster;
 				case NpcID.DUNCE_6749:
