@@ -44,8 +44,8 @@ public interface RandomEventHiderConfig extends Config
 
 	@ConfigItem(
 			keyName = "hideOtherNiles",
-			name = "Hide others' Niles",
-			description = "Hide the Niles, Miles, Giles random event of other players",
+			name = "Hide others' Certers (Niles)",
+			description = "Hide the Certers (Niles, Miles, Giles) random event of other players",
 			position = 2,
 			section = othersRandomsCategory
 	)
@@ -286,8 +286,8 @@ public interface RandomEventHiderConfig extends Config
 
 	@ConfigItem(
 			keyName = "hideOwnNiles",
-			name = "Hide your own Niles",
-			description = "Hide your own Niles, Miles, Giles random event",
+			name = "Hide your own Certers (Niles)",
+			description = "Hide your own Certers (Niles, Miles, Giles) random event",
 			position = 2,
 			section = ownRandomsCategory
 	)
