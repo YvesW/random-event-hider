@@ -22,8 +22,16 @@ import java.util.*;
 		description = "Adds the ability to hide specific random events that interact with you or with other players.",
 		tags = {"random event,hider,random event hider,ra hider"}
 )
-//TODO: maybe also mute sounds! like whistle from dwarf, sploosh van frogs, evil bob sound
-//TODO: maybe also hide the poof when dismissed if this is visible?
+	//TODO: maybe also mute sounds! like whistle from dwarf, sploosh van frogs, evil bob sound
+	//TODO: maybe also hide the poof when dismissed if this is visible?
+	/*
+	TODO:
+	check annoyance mute code mute sounds randoms
+	on shutdown clear hashmaps?
+	add poof graphics id:86 doch mss zelfde als imps tp? check evt wiki of andere npc die ook gebruiken; probs clue dude na double agent?
+	=> check wanneer poof gebeurt => direct na npcdespawned? in dat geval poofhider is true on npcdespawned and false after hiding code (+ maybe ongraphicsobject spawned => setFinished?). Potentially save localpoint of random event in npcdespawned and check if poof is at same localpoint location in graphicsobjectspawned?
+	dan sound + poof + strange plant under misc probs
+	 */
 
 public class RandomEventHiderPlugin extends Plugin {
 	private static final Set<Integer> EVENT_NPCS = ImmutableSet.of(
