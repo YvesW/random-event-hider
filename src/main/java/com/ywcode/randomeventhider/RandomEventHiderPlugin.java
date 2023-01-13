@@ -22,8 +22,15 @@ import java.util.*;
 		description = "Adds the ability to hide specific random events that interact with you or with other players.",
 		tags = {"random event,hider,random event hider,ra hider"}
 )
-//TODO: maybe also mute sounds! like whistle from dwarf, sploosh van frogs, evil bob sound
-//TODO: maybe also hide the poof when dismissed if this is visible?
+	//TODO: maybe also mute sounds! like whistle from dwarf, sploosh van frogs, evil bob sound
+	//TODO: maybe also hide the poof when dismissed if this is visible?
+	/*
+	TODO:
+	check annoyance mute code mute sounds randoms
+	add poof graphics id:86 doch mss zelfde als imps tp? check evt wiki of andere npc die ook gebruiken; probs clue dude na double agent?
+	=> check wanneer poof gebeurt => direct na npcdespawned? in dat geval poofhider is true on npcdespawned and false after hiding code (+ maybe ongraphicsobject spawned => setFinished?). Potentially save localpoint of random event in npcdespawned and check if poof is at same localpoint location in graphicsobjectspawned?
+	dan sound + poof + strange plant under misc probs
+	 */
 
 public class RandomEventHiderPlugin extends Plugin {
 	private static final Set<Integer> EVENT_NPCS = ImmutableSet.of(
@@ -116,19 +123,21 @@ public class RandomEventHiderPlugin extends Plugin {
 	private Hooks hooks;
 
 	@Override
-	protected void startUp() {
+	public void startUp() {
 		hooks.registerRenderableDrawListener(drawListener);
 		updateConfig();
 	}
 
 	@Override
-	protected void shutDown() {
+	public void shutDown() {
 		hooks.unregisterRenderableDrawListener(drawListener);
+		ownRandomsMap.clear();
+		otherRandomsMap.clear();
 	}
 
 	@Subscribe
-	public void onConfigChanged(ConfigChanged e) {
-		if (e.getGroup().equals("RandomEventHider")) {
+	public void onConfigChanged(ConfigChanged configChanged) {
+		if (configChanged.getGroup().equals("RandomEventHider")) {
 			updateConfig();
 		}
 	}
@@ -187,111 +196,102 @@ public class RandomEventHiderPlugin extends Plugin {
 		Actor target = event.getTarget();
 		Player player = client.getLocalPlayer();
 
-		//This is the player's own random event, assuming the random immediately interacts with the player when spawned.
-		//Won't get marked as someone else's NPC later on (even if other people interact with it), since it's already on this map.
-		//Assuming random event NPCs for other players immediately interact with another user when they spawn, it'll get on the "other" map, even if the player talks to someone else's random event later on.
-		//Also write down the index in case there are multiple random events with the same NPC id on screen (index likely differs?)
-		if (player != null && (source instanceof NPC) && (target instanceof Player) && target == player && EVENT_NPCS.contains(((NPC) source).getId())) {
-			if (!ownRandomsMap.containsKey(((NPC) source).getIndex()) && !otherRandomsMap.containsKey(((NPC) source).getIndex())) { //A potential Id check is probably redundant, since all NPCs most likely have a unique Index. Additionally, doesn't error out if lists are empty AFAIK, so no isEmpty() check first.
-				ownRandomsMap.put(((NPC) source).getIndex(), ((NPC) source).getId()); //Id is probably useful for e.g. the Frog random
+		if (player != null && (source instanceof NPC) && (target instanceof Player) && EVENT_NPCS.contains(((NPC) source).getId())) {
+			int sourceIndex = ((NPC) source).getIndex();
+			int sourceId = ((NPC) source).getId();
+
+			//This is the player's own random event, assuming the random immediately interacts with the player when spawned.
+			//Won't get marked as someone else's NPC later on (even if other people interact with it), since it's already on this map.
+			//Assuming random event NPCs for other players immediately interact with another user when they spawn, it'll get on the "other" map, even if the player talks to someone else's random event later on.
+			//Also write down the index in case there are multiple random events with the same NPC id on screen (index likely differs?)
+			if (target == player && !ownRandomsMap.containsKey(sourceIndex) && !otherRandomsMap.containsKey(sourceIndex)) { //A potential Id check is probably redundant, since all NPCs most likely have a unique Index. Additionally, doesn't error out if maps are empty AFAIK, so no isEmpty() check first.
+				ownRandomsMap.put(sourceIndex, sourceId); //Id is probably useful for e.g. the Frog random
 			}
-		}
 
-		//This is someone else's random event, assuming the random immediately interacts with the target when spawned.
-		//Won't get marked as your own NPC later on (even if the player interacts with it), since it's already on this map.
-		//Also write down the index in case there are multiple random events with the same NPC id on screen (index likely differs?)
-		if (player != null && (source instanceof NPC) && (target instanceof Player) && target != player && EVENT_NPCS.contains(((NPC) source).getId())) {
-			if (!ownRandomsMap.containsKey(((NPC) source).getIndex()) && !otherRandomsMap.containsKey(((NPC) source).getIndex())) {//A potential Id check is probably redundant, since all NPCs most likely have a unique Index. Additionally, doesn't error out if lists are empty AFAIK, so no isEmpty() check first.
-
+			//This is someone else's random event, assuming the random immediately interacts with the target when spawned.
+			//Won't get marked as your own NPC later on (even if the player interacts with it), since it's already on this map.
+			//Also write down the index in case there are multiple random events with the same NPC id on screen (index likely differs?)
+			if (target != player && !ownRandomsMap.containsKey(sourceIndex) && !otherRandomsMap.containsKey(sourceIndex)) { //A potential Id check is probably redundant, since all NPCs most likely have a unique Index. Additionally, doesn't error out if maps are empty AFAIK, so no isEmpty() check first.
 				//Frogs are the only event that spawn multiple Npcs. Not sure if they all interact with the player (most likely not; haven't been able to test yet though).
 				//Don't add them to otherRandomMap if there's already a frog targeting the player to not hide the other frog Npcs if "Hide own kiss the frog" is enabled.
 				//Will also hide other's frogs if both you and another player have the 'kiss the frog' event at the exact same time, and you only got your own hidden; or it will not hide theirs if you only got 'hide other kiss the frog' enabled. However, we accept that.
-				if (!( (FROGS_NPCS.contains(((NPC) source).getId())) &&
+				if (! ((FROGS_NPCS.contains(sourceId)) &&
 						(ownRandomsMap.containsValue(NpcID.FROG_5429) ||
 								ownRandomsMap.containsValue(NpcID.FROG_5430) ||
 								ownRandomsMap.containsValue(NpcID.FROG_5431) ||
 								ownRandomsMap.containsValue(NpcID.FROG_5432) ||
 								ownRandomsMap.containsValue(NpcID.FROG_5833) ||
-								ownRandomsMap.containsValue(NpcID.FROG)))) {
-					otherRandomsMap.put(((NPC) source).getIndex(), ((NPC) source).getId()); //Id is probs useful for e.g. the Frog random
+								ownRandomsMap.containsValue(NpcID.FROG))) ) {
+					otherRandomsMap.put(sourceIndex, sourceId); //Id is probs useful for e.g. the Frog random
 				}
 			}
 		}
 	}
 
-	/*
-	@Subscribe
-	public void onNpcSpawned(NpcSpawned npcSpawned) { //Potentially use NpcSpawned event to instahide and then later on remove the hide, in case the Npc flashes on spawn? Still need further testing with current implementation to determine if it does indeed flash or not, but seems like it doesn't based on initial tests. Alternative: see shoulddraw code.
-		}
-		*/
-
 	@Subscribe
 	public void onNpcDespawned(NpcDespawned npcDespawned) {
-		if (EVENT_NPCS.contains(npcDespawned.getNpc().getId())) {
-			if (ownRandomsMap.containsKey(npcDespawned.getNpc().getIndex())) {
-				ownRandomsMap.remove(npcDespawned.getNpc().getIndex(), npcDespawned.getNpc().getId());
+		int npcDespawnedId = npcDespawned.getNpc().getId();
+		int npcDespawnedIndex = npcDespawned.getNpc().getIndex();
+		if (EVENT_NPCS.contains(npcDespawnedId)) {
+			if (ownRandomsMap.containsKey(npcDespawnedIndex)) {
+				ownRandomsMap.remove(npcDespawnedIndex, npcDespawnedId);
 			}
-			if (otherRandomsMap.containsKey(npcDespawned.getNpc().getIndex())) {
-				otherRandomsMap.remove(npcDespawned.getNpc().getIndex(), npcDespawned.getNpc().getId());
+			if (otherRandomsMap.containsKey(npcDespawnedIndex)) {
+				otherRandomsMap.remove(npcDespawnedIndex, npcDespawnedId);
 			}
 		}
-	}
-
-	@Provides
-	RandomEventHiderConfig provideConfig(ConfigManager configManager) {
-		return configManager.getConfig(RandomEventHiderConfig.class);
 	}
 
 	@VisibleForTesting
 	boolean shouldDraw(Renderable renderable, boolean drawingUI) {
-		if (renderable instanceof NPC &&
-				(EVENT_NPCS.contains(((NPC) renderable).getId()) || ((NPC) renderable).getId() == NpcID.STRANGE_PLANT)
-				&& !client.isInInstancedRegion()) { //(Most) NPCs have separate IDs for their overworld counterparts (in contrast to their random event/instanced ones), but just to be sure, let's skip the instances.
-			//Randoms might actually not be an instance though... Currently I can only find the maze random event on the map (which doesn't contain any EVENT_NPCS!)...
-			//However, it should still be fine: Beekeeper uses a different Id, Sergeant Damien uses a different Id, Evil Bob uses a different Id,
-			//the Freaky Forester uses a different Id, Leo uses a different Id, the Frog random does not teleport the played anymore,
-			//the Pillory Guard likely uses a different Id and is irrelevant in his event, Flippa uses a different Id,
-			//the Prison Pete random only has Bob inviting you (not in the random), the maze random doesn't contain any relevant Npcs,
-			//Postie Pete doesn't show up in the Evil Twin random.
+		if (renderable instanceof NPC) {
 			NPC npc = (NPC) renderable;
-			if (ownRandomsMap.containsKey(npc.getIndex())) { //Assume this is an own random event
-				return !shouldHide(npc.getId(), true);
-			}
+			int npcId = ((NPC) renderable).getId();
+			if (EVENT_NPCS.contains(npcId) || (npcId == NpcID.STRANGE_PLANT)) { // Instance check removed because PoH can still have random events and the events have different overwold NPC ids anyway.
+				//Beekeeper uses a different Id, Sergeant Damien uses a different Id, Evil Bob uses a different Id,
+				//the Freaky Forester uses a different Id, Leo uses a different Id, the Frog random does not teleport the played anymore,
+				//the Pillory Guard likely uses a different Id and is irrelevant in his event, Flippa uses a different Id,
+				//the Prison Pete random only has Bob inviting you (not in the random), the maze random doesn't contain any relevant Npcs,
+				//Postie Pete doesn't show up in the Evil Twin random.
+				int npcIndex = npc.getIndex();
 
-			if (otherRandomsMap.containsKey(npc.getIndex())) { //Assume this is for other people's random events
-				return !shouldHide(npc.getId(), false);
-			}
+				if (ownRandomsMap.containsKey(npcIndex)) { //Assume this is an own random event
+					return !shouldHide(npcId, true);
+				}
+				if (otherRandomsMap.containsKey(npcIndex)) { //Assume this is for other people's random events
+					return !shouldHide(npcId, false);
+				}
 
-			//TODO: Potentially use the following code to prevent flashing of the Npcs when they spawn in case they don't interact immediately (if this turns out to be a problem). Alternatively: use onNpcSpawned?
-			/*
-			if (!ownRandomsMap.containsKey(npc.getIndex()) && !otherRandomsMap.containsKey(npc.getIndex())) {
-				if (shouldHide(npc.getId(), true) || shouldHide(npc.getId(), false)) {
-					return false;
+				//Hide other frogs if a frog is on the ownRandomsMap or otherRandomsMap based on settings
+				if (FROGS_NPCS.contains(npcId)) {
+					if (ownRandomsMap.containsValue(NpcID.FROG_5429) ||
+							ownRandomsMap.containsValue(NpcID.FROG_5430) ||
+							ownRandomsMap.containsValue(NpcID.FROG_5431) ||
+							ownRandomsMap.containsValue(NpcID.FROG_5432) ||
+							ownRandomsMap.containsValue(NpcID.FROG_5833) ||
+							ownRandomsMap.containsValue(NpcID.FROG)) {
+						return !shouldHide(npcId, true);
+					}
+					if (otherRandomsMap.containsValue(NpcID.FROG_5429) ||
+							otherRandomsMap.containsValue(NpcID.FROG_5430) ||
+							otherRandomsMap.containsValue(NpcID.FROG_5431) ||
+							otherRandomsMap.containsValue(NpcID.FROG_5432) ||
+							otherRandomsMap.containsValue(NpcID.FROG_5833) ||
+							otherRandomsMap.containsValue(NpcID.FROG)) {
+						return !shouldHide(npcId, false);
+					}
+					//return !(shouldHide(npcId, true) || shouldHide(npcId, false)); 	//At this point there is no frog on any of the maps. Hide to prevent flashing. However, not needed since this return statement is already listed a couple lines further down.
 				}
-			} */
 
-			//Hide other frogs if a frog is on the ownRandomsMap or otherRandomsMap based on settings
-			if (FROGS_NPCS.contains(((NPC) renderable).getId())) {
-				if (ownRandomsMap.containsValue(NpcID.FROG_5429) ||
-						ownRandomsMap.containsValue(NpcID.FROG_5430) ||
-						ownRandomsMap.containsValue(NpcID.FROG_5431) ||
-						ownRandomsMap.containsValue(NpcID.FROG_5432) ||
-						ownRandomsMap.containsValue(NpcID.FROG_5833) ||
-						ownRandomsMap.containsValue(NpcID.FROG)) {
-					return !shouldHide(npc.getId(), true);
+				//Strange plant does not interact with any person, so we'll hide them all if hideOwnStrangePlant is enabled.
+				if (npcId == NpcID.STRANGE_PLANT) {
+					return !hideAllStrangePlant;
 				}
-				if (otherRandomsMap.containsValue(NpcID.FROG_5429) ||
-						otherRandomsMap.containsValue(NpcID.FROG_5430) ||
-						otherRandomsMap.containsValue(NpcID.FROG_5431) ||
-						otherRandomsMap.containsValue(NpcID.FROG_5432) ||
-						otherRandomsMap.containsValue(NpcID.FROG_5833) ||
-						otherRandomsMap.containsValue(NpcID.FROG)) {
-					return !shouldHide(npc.getId(), false);
-				}
-			}
-			//Strange plant does not interact with any person, so we'll hide them all if hideOwnStrangePlant is enabled.
-			if (((NPC) renderable).getId() == NpcID.STRANGE_PLANT) {
-				return !hideAllStrangePlant;
+
+				//Strange plant has already been handled, so it doesn't need to be excluded.
+				//Npc is not on any of the maps, so no map check needed here.
+				return !(shouldHide(npcId, true) || shouldHide(npcId, false)); //Prevent NPCs from flashing when showing up.
+				//TODO: test if this makes Npcs show up again then they are on a map, or if they are perma hidden until despawned!
 			}
 		}
 		return true;
@@ -422,5 +422,10 @@ public class RandomEventHiderPlugin extends Plugin {
 			}
 		}
 		return false;
+	}
+
+	@Provides
+	RandomEventHiderConfig provideConfig(ConfigManager configManager) {
+		return configManager.getConfig(RandomEventHiderConfig.class);
 	}
 }
