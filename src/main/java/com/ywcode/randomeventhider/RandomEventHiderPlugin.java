@@ -22,14 +22,11 @@ import java.util.*;
 		description = "Adds the ability to hide specific random events that interact with you or with other players.",
 		tags = {"random event,hider,random event hider,ra hider"}
 )
-	//TODO: maybe also mute sounds! like whistle from dwarf, sploosh van frogs, evil bob sound
 	//TODO: maybe also hide the poof when dismissed if this is visible?
 	/*
 	TODO:
-	check annoyance mute code mute sounds randoms
 	add poof graphics id:86 doch mss zelfde als imps tp? check evt wiki of andere npc die ook gebruiken; probs clue dude na double agent?
 	=> check wanneer poof gebeurt => direct na npcdespawned? in dat geval poofhider is true on npcdespawned and false after hiding code (+ maybe ongraphicsobject spawned => setFinished?). Potentially save localpoint of random event in npcdespawned and check if poof is at same localpoint location in graphicsobjectspawned?
-	dan sound + poof + strange plant under misc probs
 	 */
 
 public class RandomEventHiderPlugin extends Plugin {
@@ -61,6 +58,10 @@ public class RandomEventHiderPlugin extends Plugin {
 	private static final Set<Integer> FROGS_NPCS = ImmutableSet.of(
 			NpcID.FROG_5429, NpcID.FROG_5430, NpcID.FROG_5431, NpcID.FROG_5432, NpcID.FROG_5833, NpcID.FROG
 	);
+
+	private static final int POOF_SOUND = 1930;
+	private static final int DRUNKEN_DWARF_SOUND = 2297;
+	private static final int EVIL_BOB_MEOW = 333; //Apparently also cat hiss
 
 	private boolean hideOtherBeekeeper;
 	private boolean hideOtherCaptArnav;
@@ -110,6 +111,7 @@ public class RandomEventHiderPlugin extends Plugin {
 	private boolean muteBob;
 	private boolean muteDwarf;
 	private boolean mutePoof;
+	private boolean muteOtherRandomSounds;
 	private boolean hidePoof;
 
 	private LinkedHashMap<Integer, Integer> ownRandomsMap = new LinkedHashMap<Integer, Integer>();
@@ -195,6 +197,7 @@ public class RandomEventHiderPlugin extends Plugin {
 		muteDwarf = config.muteDwarf();
 		muteBob = config.muteBob();
 		mutePoof = config.mutePoof();
+		muteOtherRandomSounds = config.muteOtherRandomSounds();
 		hidePoof = config.hidePoof();
 	}
 
@@ -250,11 +253,33 @@ public class RandomEventHiderPlugin extends Plugin {
 		}
 	}
 
+	@Subscribe
+	public void onSoundEffectPlayed(SoundEffectPlayed soundEffectPlayed) {
+		if (soundEffectPlayed.getSource() != null && soundEffectPlayed.getSource() instanceof NPC) {
+			int sourceNpcId = ((NPC) soundEffectPlayed.getSource()).getId();
+			int soundId = soundEffectPlayed.getSoundId();
+			if ((EVENT_NPCS.contains(sourceNpcId) || (sourceNpcId == NpcID.STRANGE_PLANT)) && shouldMute(soundId)) {
+				soundEffectPlayed.consume();
+			}
+		}
+	}
+
+	@Subscribe
+	public void onAreaSoundEffectPlayed(AreaSoundEffectPlayed areaSoundEffectPlayed) {
+		if (areaSoundEffectPlayed.getSource() != null && areaSoundEffectPlayed.getSource() instanceof NPC) {
+			int sourceNpcId = ((NPC) areaSoundEffectPlayed.getSource()).getId();
+			int soundId = areaSoundEffectPlayed.getSoundId();
+			if ((EVENT_NPCS.contains(sourceNpcId) || (sourceNpcId == NpcID.STRANGE_PLANT)) && shouldMute(soundId)) {
+				areaSoundEffectPlayed.consume();
+			}
+		}
+	}
+
 	@VisibleForTesting
 	boolean shouldDraw(Renderable renderable, boolean drawingUI) {
 		if (renderable instanceof NPC) {
 			NPC npc = (NPC) renderable;
-			int npcId = ((NPC) renderable).getId();
+			int npcId = npc.getId();
 			if (EVENT_NPCS.contains(npcId) || (npcId == NpcID.STRANGE_PLANT)) { // Instance check removed because PoH can still have random events and the events have different overwold NPC ids anyway.
 				//Beekeeper uses a different Id, Sergeant Damien uses a different Id, Evil Bob uses a different Id,
 				//the Freaky Forester uses a different Id, Leo uses a different Id, the Frog random does not teleport the played anymore,
@@ -288,7 +313,7 @@ public class RandomEventHiderPlugin extends Plugin {
 							otherRandomsMap.containsValue(NpcID.FROG)) {
 						return !shouldHide(npcId, false);
 					}
-					//return !(shouldHide(npcId, true) || shouldHide(npcId, false)); 	//At this point there is no frog on any of the maps. Hide to prevent flashing. However, not needed since this return statement is already listed a couple lines further down.
+					//return !(shouldHide(npcId, true) || shouldHide(npcId, false)); 	//At this point there is no frog on any of the maps. Hide to prevent flashing. => However, not needed since this return statement is already listed a couple lines further down.
 				}
 
 				//Strange plant does not interact with any person, so we'll hide them all if hideOwnStrangePlant is enabled.
@@ -430,6 +455,19 @@ public class RandomEventHiderPlugin extends Plugin {
 			}
 		}
 		return false;
+	}
+
+	private boolean shouldMute(int soundId) {
+		switch (soundId) {
+			case DRUNKEN_DWARF_SOUND:
+				return muteDwarf;
+			case EVIL_BOB_MEOW:
+				return muteBob;
+			case POOF_SOUND:
+				return mutePoof;
+		}
+		return muteOtherRandomSounds;
+		//TODO: potentially add the frogs splashing sound if you ever find the sound id
 	}
 
 	@Provides
