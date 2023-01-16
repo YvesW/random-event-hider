@@ -18,7 +18,14 @@ public interface RandomEventHiderConfig extends Config
 			position = 1,
 			closedByDefault = true
 	)
-	String ownRandomsCategory = "ownRandomsCategory";
+	String ownRandomsCategory = "miscCategory";
+	@ConfigSection(
+			name = "Miscellaneous",
+			description = "Miscellaneous settings",
+			position = 2,
+			closedByDefault = true
+	)
+	String miscCategory = "miscCategory";
 
 	@ConfigItem(
 			keyName = "hideOtherBeekeeper",
@@ -493,18 +500,6 @@ public interface RandomEventHiderConfig extends Config
 		return false;
 	}
 
-	//Strange plant does not interact with any person, so we'll hide them all if hideAllStrangePlant is enabled.
-	@ConfigItem(
-			keyName = "hideAllStrangePlant",
-			name = "Hide ALL Strange Plants",
-			description = "Hide ALL Strange Plant random events, both your own events and the events of other players",
-			position = 21,
-			section = ownRandomsCategory
-	)
-	default boolean hideAllStrangePlant() {
-		return false;
-	}
-
 	@ConfigItem(
 			keyName = "hideOwnSurpriseExam",
 			name = "Hide your own Surprise Exam",
@@ -515,4 +510,61 @@ public interface RandomEventHiderConfig extends Config
 	default boolean hideOwnSurpriseExam() {
 		return false;
 	}
+
+	//Strange plant does not interact with any person, so we'll hide them all if hideAllStrangePlant is enabled.
+	@ConfigItem(
+			keyName = "hideAllStrangePlant",
+			name = "Hide ALL Strange Plants",
+			description = "Hide ALL Strange Plant random events, both your own events and the events of other players",
+			position = 0,
+			section = miscCategory
+	)
+	default boolean hideAllStrangePlant() {
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "muteDwarf",
+			name = "Mute Drunken Dwarf",
+			description = "Mutes the Drunken Dwarf",
+			position = 1,
+			section = miscCategory
+	)
+	default boolean muteDwarf() {
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "muteBob",
+			name = "Mute Evil Bob",
+			description = "Mutes Evil Bob's meow",
+			position = 2,
+			section = miscCategory
+	)
+	default boolean muteBob() {
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "mutePoof",
+			name = "Mute the Poof",
+			description = "Mutes random events' poof sound",
+			position = 3,
+			section = miscCategory
+	)
+	default boolean mutePoof() {
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "hidePoof",
+			name = "Hide the Poof animation",
+			description = "Hides random events' poof animation",
+			position = 4,
+			section = miscCategory
+	)
+	default boolean hidePoof() {
+		return true;
+	}
+
 }

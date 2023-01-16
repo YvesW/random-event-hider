@@ -105,8 +105,12 @@ public class RandomEventHiderPlugin extends Plugin {
 	private boolean hideOwnQuizMaster;
 	private boolean hideOwnRickTurpentine;
 	private boolean hideOwnSandwichLady;
-	private boolean hideAllStrangePlant;
 	private boolean hideOwnSurpriseExam;
+	private boolean hideAllStrangePlant;
+	private boolean muteBob;
+	private boolean muteDwarf;
+	private boolean mutePoof;
+	private boolean hidePoof;
 
 	private LinkedHashMap<Integer, Integer> ownRandomsMap = new LinkedHashMap<Integer, Integer>();
 	private LinkedHashMap<Integer, Integer> otherRandomsMap = new LinkedHashMap<Integer, Integer>();
@@ -186,8 +190,12 @@ public class RandomEventHiderPlugin extends Plugin {
 		hideOwnQuizMaster = config.hideOwnQuizMaster();
 		hideOwnRickTurpentine = config.hideOwnRickTurpentine();
 		hideOwnSandwichLady = config.hideOwnSandwichLady();
-		hideAllStrangePlant = config.hideAllStrangePlant();
 		hideOwnSurpriseExam = config.hideOwnSurpriseExam();
+		hideAllStrangePlant = config.hideAllStrangePlant();
+		muteDwarf = config.muteDwarf();
+		muteBob = config.muteBob();
+		mutePoof = config.mutePoof();
+		hidePoof = config.hidePoof();
 	}
 
 	@Subscribe
