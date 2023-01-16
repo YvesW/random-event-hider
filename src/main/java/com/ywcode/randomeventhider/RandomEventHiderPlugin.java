@@ -226,13 +226,7 @@ public class RandomEventHiderPlugin extends Plugin {
 				//Frogs are the only event that spawn multiple Npcs. Not sure if they all interact with the player (most likely not; haven't been able to test yet though).
 				//Don't add them to otherRandomMap if there's already a frog targeting the player to not hide the other frog Npcs if "Hide own kiss the frog" is enabled.
 				//Will also hide other's frogs if both you and another player have the 'kiss the frog' event at the exact same time, and you only got your own hidden; or it will not hide theirs if you only got 'hide other kiss the frog' enabled. However, we accept that.
-				if (! ((FROGS_NPCS.contains(sourceId)) &&
-						(ownRandomsMap.containsValue(NpcID.FROG_5429) ||
-								ownRandomsMap.containsValue(NpcID.FROG_5430) ||
-								ownRandomsMap.containsValue(NpcID.FROG_5431) ||
-								ownRandomsMap.containsValue(NpcID.FROG_5432) ||
-								ownRandomsMap.containsValue(NpcID.FROG_5833) ||
-								ownRandomsMap.containsValue(NpcID.FROG))) ) {
+				if (! (FROGS_NPCS.contains(sourceId) &&	mapContainsFrogId(ownRandomsMap)) ) {
 					otherRandomsMap.put(sourceIndex, sourceId); //Id is probs useful for e.g. the Frog random
 				}
 			}
@@ -297,20 +291,10 @@ public class RandomEventHiderPlugin extends Plugin {
 
 				//Hide other frogs if a frog is on the ownRandomsMap or otherRandomsMap based on settings
 				if (FROGS_NPCS.contains(npcId)) {
-					if (ownRandomsMap.containsValue(NpcID.FROG_5429) ||
-							ownRandomsMap.containsValue(NpcID.FROG_5430) ||
-							ownRandomsMap.containsValue(NpcID.FROG_5431) ||
-							ownRandomsMap.containsValue(NpcID.FROG_5432) ||
-							ownRandomsMap.containsValue(NpcID.FROG_5833) ||
-							ownRandomsMap.containsValue(NpcID.FROG)) {
+					if (mapContainsFrogId(ownRandomsMap)) {
 						return !shouldHide(npcId, true);
 					}
-					if (otherRandomsMap.containsValue(NpcID.FROG_5429) ||
-							otherRandomsMap.containsValue(NpcID.FROG_5430) ||
-							otherRandomsMap.containsValue(NpcID.FROG_5431) ||
-							otherRandomsMap.containsValue(NpcID.FROG_5432) ||
-							otherRandomsMap.containsValue(NpcID.FROG_5833) ||
-							otherRandomsMap.containsValue(NpcID.FROG)) {
+					if (mapContainsFrogId (otherRandomsMap)) {
 						return !shouldHide(npcId, false);
 					}
 					//return !(shouldHide(npcId, true) || shouldHide(npcId, false)); 	//At this point there is no frog on any of the maps. Hide to prevent flashing. => However, not needed since this return statement is already listed a couple lines further down.
@@ -328,6 +312,18 @@ public class RandomEventHiderPlugin extends Plugin {
 			}
 		}
 		return true;
+	}
+
+	private boolean mapContainsFrogId(LinkedHashMap Map) {
+		if (Map.containsValue(NpcID.FROG_5429) ||
+				Map.containsValue(NpcID.FROG_5430) ||
+				Map.containsValue(NpcID.FROG_5431) ||
+				Map.containsValue(NpcID.FROG_5432) ||
+				Map.containsValue(NpcID.FROG_5833) ||
+				Map.containsValue(NpcID.FROG)) {
+			return true;
+		}
+		return false;
 	}
 
 	private boolean shouldHide(int id, boolean OwnEvent) {
