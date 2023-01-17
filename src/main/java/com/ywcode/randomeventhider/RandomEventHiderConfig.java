@@ -18,7 +18,7 @@ public interface RandomEventHiderConfig extends Config
 			position = 1,
 			closedByDefault = true
 	)
-	String ownRandomsCategory = "miscCategory";
+	String ownRandomsCategory = "ownRandomsCategory";
 	@ConfigSection(
 			name = "Miscellaneous",
 			description = "Miscellaneous settings",

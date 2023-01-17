@@ -23,7 +23,7 @@ import java.util.*;
 		description = "Adds the ability to hide specific random events that interact with you or with other players.",
 		tags = {"random event,hider,random event hider,ra hider"}
 )
-	//TODO: REMOVE TEST BEFORE COMMITTING TO PLUGIN HUB
+	//TODO: REMOVE TEST & println BEFORE COMMITTING TO PLUGIN HUB
 
 public class RandomEventHiderPlugin extends Plugin {
 	private static final Set<Integer> EVENT_NPCS = ImmutableSet.of(
@@ -249,7 +249,7 @@ public class RandomEventHiderPlugin extends Plugin {
 		addPoofLocationToList(npcSpawnedId, npcSpawnedIndex, npcSpawnedActor, true);
 
 		if (EVENT_NPCS.contains(npcSpawned.getNpc().getId()) || npcSpawned.getNpc().getId() == NpcID.STRANGE_PLANT) { //TEST
-			System.out.println("Npc "+npcSpawned.getNpc().getId()+" (shouldHideBasedOnMaps: "+shouldHideBasedOnMaps(npcSpawned.getNpc().getIndex(), npcSpawned.getNpc().getId()) +") spawned at: "+System.currentTimeMillis());
+			System.out.println("Npc "+npcSpawned.getNpc().getId()+" (shouldHideBasedOnMaps: "+shouldHideBasedOnMaps(npcSpawned.getNpc().getIndex(), npcSpawned.getNpc().getId()) +") spawned at: "+System.currentTimeMillis()+" at location: "+npcSpawned.getNpc().getWorldLocation());
 		}
 	}
 
@@ -270,7 +270,7 @@ public class RandomEventHiderPlugin extends Plugin {
 		}
 
 		if (EVENT_NPCS.contains(npcDespawned.getNpc().getId()) || npcDespawned.getNpc().getId() == NpcID.STRANGE_PLANT) { //TEST
-			System.out.println("Npc "+npcDespawned.getNpc().getId()+" (shouldHideBasedOnMaps: "+shouldHideBasedOnMaps(npcDespawned.getNpc().getIndex(), npcDespawned.getNpc().getId()) +") despawned at: "+System.currentTimeMillis());
+			System.out.println("Npc "+npcDespawned.getNpc().getId()+" (shouldHideBasedOnMaps: "+shouldHideBasedOnMaps(npcDespawned.getNpc().getIndex(), npcDespawned.getNpc().getId()) +") despawned at: "+System.currentTimeMillis()+" at location: "+npcDespawned.getNpc().getWorldLocation());
 		}
 	}
 
@@ -278,7 +278,7 @@ public class RandomEventHiderPlugin extends Plugin {
 	public void onGraphicsObjectCreated (GraphicsObjectCreated graphicsObjectCreated) { //TEST
 		int graphicsObjectId = graphicsObjectCreated.getGraphicsObject().getId();
 		if (graphicsObjectId == POOF_GRAPHICSOBJECT_ID) {
-		System.out.println("POOF GO created at: "+System.currentTimeMillis());
+		System.out.println("POOF GO created at: "+System.currentTimeMillis()+" at worldpoint: "+WorldPoint.fromLocalInstance(client, graphicsObjectCreated.getGraphicsObject().getLocation()));
 		}
 	}
 
@@ -326,10 +326,13 @@ public class RandomEventHiderPlugin extends Plugin {
 			GraphicsObject graphicsObject = (GraphicsObject) renderable;
 			int graphicsObjectId = graphicsObject.getId();
 			if (graphicsObjectId == POOF_GRAPHICSOBJECT_ID) {
+				System.out.println("It's a poof indeed! + "+System.currentTimeMillis());
 				//All this code is written with the assumption that POOF_GRAPHICSOBJECT_ID is used for multiple npcs, e.g. imps, double agents etc.
 				//Otherwise a simple Id check would have been enough. If the current implementation turns out to be too crappy, I'll just swap to that.
 				LocalPoint graphicsObjectLocalPoint = graphicsObject.getLocation();
 				WorldPoint graphicsObjectWorldPoint = WorldPoint.fromLocalInstance(client, graphicsObjectLocalPoint);
+				System.out.println("Worldpoint poof = "+graphicsObjectWorldPoint);
+				System.out.println("randomPoofLocationList = "+randomPoofLocationList);
 				//Frogs spawn multiple Npcs, but only 1 poof (unsure what the logic is to what Npc poofs)
 				//So currently if a frog doesn't poof and e.g. an imp spawns the GraphicsObject on that exact tile, it'll hide it, but that's acceptable.
 
@@ -371,7 +374,9 @@ public class RandomEventHiderPlugin extends Plugin {
 				//=========================END OF RANDOM NOTES=========================
 
 				if (randomPoofLocationList.contains(graphicsObjectWorldPoint)) {
+					graphicsObject.setFinished(true);
 					randomPoofLocationList.remove(graphicsObjectWorldPoint);
+					System.out.println("Poof should be hidden! + "+System.currentTimeMillis());
 					return !hidePoof;
 				}
 			}
@@ -383,7 +388,7 @@ public class RandomEventHiderPlugin extends Plugin {
 	private void addPoofLocationToList(int npcId, int npcIndex, Actor npcActor, boolean NpcSpawned) {
 		//If an Npc is hidden via the plugin, the poof should happen on the NpcSpawned location (will always happen due to code to prevent Npc flashing)
 		//If an Npc is not hidden via the plugin, the poof should happen briefly on the NpcSpawned location (unless both own and other are not hidden!) and also on the NpcDespawned location
-		//Tldr: Poof always happens on the spawn location (except when both own and other are NOT hidden), but only on the despawn location if the Npc is not hidden
+		//Tldr: Poof always happens on the spawn location (except when both own and other are NOT hidden), but only on the despawn location if the Npc is not hidden.
 		if (EVENT_NPCS.contains(npcId) || npcId == NpcID.STRANGE_PLANT) {
 			WorldPoint npcWorldPoint = npcActor.getWorldLocation();
 			if (NpcSpawned && shouldHideBasedOnMaps(npcIndex, npcId)) {
