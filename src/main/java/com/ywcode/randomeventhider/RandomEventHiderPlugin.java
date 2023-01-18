@@ -276,8 +276,8 @@ public class RandomEventHiderPlugin extends Plugin {
 		}
 	}
 
+	@Subscribe
 	public void onGameTick(GameTick gameTick) {
-		System.out.println("test ");
 		spawnedDespawnedNpcLocationsThisTick.clear();
 	}
 
