@@ -305,6 +305,7 @@ public class RandomEventHiderPlugin extends Plugin {
 				GraphicsObject poofGraphicsObject = poofGraphicsObjectList.get(i);
 				if (poofGraphicsObject.getPrevious() == null) { //Check if graphicsObject is destroyed conform https://discord.com/channels/301497432909414422/419891709883973642/740262232432050247
 					WorldPoint graphicsObjectWorldPoint = WorldPoint.fromLocalInstance(client, poofGraphicsObject.getLocation());
+					System.out.println("Might this still need a map? graphicsObjectWorldPoint = "+graphicsObjectWorldPoint);
 					for (Map.Entry<Integer, WorldPoint> entry : potentialPoofLocationMap.entrySet()) {
 						if (entry.getValue().equals(graphicsObjectWorldPoint)) {
 							potentialPoofLocationDeleteMap.put(entry.getKey(), entry.getValue());
@@ -325,7 +326,7 @@ public class RandomEventHiderPlugin extends Plugin {
 				int npcGameCycle = entry.getKey();
 				if (currentGameCycle - npcGameCycle > 150) {
 					potentialPoofLocationDeleteMap.put(entry.getKey(), entry.getValue());
-					System.out.println("Got a Poof Map deletion Hit DUE TO TIME OUT! potentialPoofLocationMap = "+potentialPoofLocationMap);
+					System.out.println("Got a Poof Map deletion Hit DUE TO TIME OUT! "+System.currentTimeMillis()+" potentialPoofLocationMap = "+potentialPoofLocationMap + "key = "+entry.getKey()+" value = "+entry.getValue()+" currentGameCycle = "+currentGameCycle);
 					shouldCleanListsMaps = true;
 				}
 			}
@@ -345,8 +346,8 @@ public class RandomEventHiderPlugin extends Plugin {
 			poofGraphicsObjectList.removeAll(poofGraphicsObjectDeleteList);
 			poofGraphicsObjectDeleteList.clear();
 			potentialPoofLocationDeleteMap.clear();
-			System.out.println("potentialPoofLocationMap AFTER DELETING = " + potentialPoofLocationMap); //TEST
-			System.out.println("poofGraphicsObjectList AFTER DELETING = " + poofGraphicsObjectList); //TEST
+			//System.out.println("potentialPoofLocationMap AFTER DELETING = " + potentialPoofLocationMap); //TEST
+			//System.out.println("poofGraphicsObjectList AFTER DELETING = " + poofGraphicsObjectList); //TEST
 			shouldCleanListsMaps = false;
 		}
 	}
@@ -413,8 +414,7 @@ public class RandomEventHiderPlugin extends Plugin {
 				//All this code is written with the assumption that POOF_GRAPHICSOBJECT_ID is used for multiple npcs, e.g. imps, double agents etc.
 				//Otherwise a simple Id check would have been enough. If the current implementation turns out to be too crappy, I'll just swap to that.
 				WorldPoint graphicsObjectWorldPoint = WorldPoint.fromLocalInstance(client, graphicsObject.getLocation());
-				System.out.println("Worldpoint poof at " + System.currentTimeMillis() + " = " + graphicsObjectWorldPoint); //TEST
-				System.out.println("potentialPoofLocationMap = " + potentialPoofLocationMap); //TEST
+				System.out.println("potentialPoofLocationMap" + System.currentTimeMillis() +" = " + potentialPoofLocationMap); //TEST
 
 				if (potentialPoofLocationMap.containsValue(graphicsObjectWorldPoint)) {
 					graphicsObject.setFinished(true);
