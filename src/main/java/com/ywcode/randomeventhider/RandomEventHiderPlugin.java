@@ -111,9 +111,15 @@ public class RandomEventHiderPlugin extends Plugin {
 	private boolean muteOtherRandomSounds;
 	private boolean hidePoof;
 
+	boolean shouldCleanListsMaps = false;
+
 	private LinkedHashMap<Integer, Integer> ownRandomsMap = new LinkedHashMap<Integer, Integer>();
 	private LinkedHashMap<Integer, Integer> otherRandomsMap = new LinkedHashMap<Integer, Integer>();
-	private ArrayList<WorldPoint> randomPoofLocationList = new ArrayList<WorldPoint>();
+	private ArrayList<GraphicsObject> poofGraphicsObjectList = new ArrayList<GraphicsObject>();
+	private ArrayList<GraphicsObject> poofGraphicsObjectDeleteList = new ArrayList<GraphicsObject>();
+	private LinkedHashMap<Integer, WorldPoint> potentialPoofLocationMap = new LinkedHashMap<Integer, WorldPoint>();
+	private LinkedHashMap<Integer, WorldPoint> potentialPoofLocationDeleteMap = new LinkedHashMap<Integer, WorldPoint>();
+	//Should probably use a custom class RandomEvent with npcIndex, npcId, interactingWith, npcSpawnedLocation, gameCycleSpawned, npcDespawnedLocation, gameCycleDespawned instead of Maps and Lists...
 
 	private final Hooks.RenderableDrawListener drawListener = this::shouldDraw;
 
@@ -137,7 +143,11 @@ public class RandomEventHiderPlugin extends Plugin {
 		hooks.unregisterRenderableDrawListener(drawListener);
 		ownRandomsMap.clear();
 		otherRandomsMap.clear();
-		randomPoofLocationList.clear();
+		potentialPoofLocationMap.clear();
+		poofGraphicsObjectList.clear();
+		poofGraphicsObjectDeleteList.clear();
+		potentialPoofLocationDeleteMap.clear();
+		shouldCleanListsMaps = false;
 	}
 
 	@Subscribe
@@ -222,11 +232,11 @@ public class RandomEventHiderPlugin extends Plugin {
 			//Won't get marked as your own NPC later on (even if the player interacts with it), since it's already on this map.
 			//Also write down the index in case there are multiple random events with the same NPC id on screen (index likely differs?)
 			if (target != player && !ownRandomsMap.containsKey(sourceIndex) && !otherRandomsMap.containsKey(sourceIndex)) { //A potential Id check is probably redundant, since all NPCs most likely have a unique Index. Additionally, doesn't error out if maps are empty AFAIK, so no isEmpty() check first.
-				//Frogs are the only event that spawn multiple Npcs. Not sure if they all interact with the player (most likely not; haven't been able to test yet though).
+				//Frogs are the only event that spawn multiple Npcs. Not sure if they all interact with the player (most likely not; haven't been able to 100% properly research this yet though).
 				//Don't add them to otherRandomMap if there's already a frog targeting the player to not hide the other frog Npcs if "Hide own kiss the frog" is enabled.
 				//Will also hide other's frogs if both you and another player have the 'kiss the frog' event at the exact same time, and you only got your own hidden; or it will not hide theirs if you only got 'hide other kiss the frog' enabled. However, we accept that.
 				if (! (FROGS_NPCS.contains(sourceId) &&	mapContainsFrogId(ownRandomsMap)) ) {
-					otherRandomsMap.put(sourceIndex, sourceId); //Id is probs useful for e.g. the Frog random
+					otherRandomsMap.put(sourceIndex, sourceId); //sourceId is probs useful for e.g. the Frog random
 				}
 			}
 		}
@@ -237,7 +247,11 @@ public class RandomEventHiderPlugin extends Plugin {
 		if (gameStateChanged.getGameState() == GameState.LOGIN_SCREEN || gameStateChanged.getGameState() == GameState.HOPPING) {
 			ownRandomsMap.clear();
 			otherRandomsMap.clear();
-			randomPoofLocationList.clear();
+			potentialPoofLocationMap.clear();
+			poofGraphicsObjectList.clear();
+			poofGraphicsObjectDeleteList.clear();
+			potentialPoofLocationDeleteMap.clear();
+			shouldCleanListsMaps = false;
 		}
 	}
 
@@ -275,35 +289,105 @@ public class RandomEventHiderPlugin extends Plugin {
 	}
 
 	@Subscribe
-	public void onGraphicsObjectCreated (GraphicsObjectCreated graphicsObjectCreated) { //TEST
+	public void onGraphicsObjectCreated(GraphicsObjectCreated graphicsObjectCreated) {
 		int graphicsObjectId = graphicsObjectCreated.getGraphicsObject().getId();
 		if (graphicsObjectId == POOF_GRAPHICSOBJECT_ID) {
-		System.out.println("POOF GO created at: "+System.currentTimeMillis()+" at worldpoint: "+WorldPoint.fromLocalInstance(client, graphicsObjectCreated.getGraphicsObject().getLocation()));
+			System.out.println("POOF GO created at: " + System.currentTimeMillis() + " at worldpoint: " + WorldPoint.fromLocalInstance(client, graphicsObjectCreated.getGraphicsObject().getLocation())); //TEST
+			poofGraphicsObjectList.add(graphicsObjectCreated.getGraphicsObject());
+			System.out.println("poofGraphicsObjectList = "+poofGraphicsObjectList); //TEST
+		}
+	}
+
+	@Subscribe
+	public void onClientTick(ClientTick clientTick) {
+		if (!poofGraphicsObjectList.isEmpty()) {
+			for (int i = 0; i < poofGraphicsObjectList.size(); i++) {
+				GraphicsObject poofGraphicsObject = poofGraphicsObjectList.get(i);
+				if (poofGraphicsObject.getPrevious() == null) { //Check if graphicsObject is destroyed conform https://discord.com/channels/301497432909414422/419891709883973642/740262232432050247
+					WorldPoint graphicsObjectWorldPoint = WorldPoint.fromLocalInstance(client, poofGraphicsObject.getLocation());
+					for (Map.Entry<Integer, WorldPoint> entry : potentialPoofLocationMap.entrySet()) {
+						if (entry.getValue() == graphicsObjectWorldPoint) {
+							potentialPoofLocationDeleteMap.put(entry.getKey(), entry.getValue());
+							shouldCleanListsMaps = true;
+							break; //We'd only like to remove the oldest entry on this WorldPoint and considering LinkedHashMap keeps insertion order, this should be the first match, after which this inner-for loop should be broken out of.
+						}
+					}
+					poofGraphicsObjectDeleteList.add(poofGraphicsObject);
+					shouldCleanListsMaps = true;
+				}
+			}
+			cleanupListsMaps();
+		}
+		if (!potentialPoofLocationMap.isEmpty()) { //Clear leftover frogs after 3s
+			int currentGameCycle = client.getGameCycle();
+			for (Map.Entry<Integer, WorldPoint> entry : potentialPoofLocationMap.entrySet()) {
+				int npcGameCycle = entry.getKey();
+				if (currentGameCycle - npcGameCycle > 150) {
+					potentialPoofLocationDeleteMap.put(entry.getKey(), entry.getValue());
+					shouldCleanListsMaps = true;
+				}
+			}
+			cleanupListsMaps();
+		}
+	}
+
+	private void cleanupListsMaps() {
+		if (shouldCleanListsMaps) {
+			System.out.println("potentialPoofLocationDeleteMap = " + potentialPoofLocationDeleteMap); //TEST
+			System.out.println("poofGraphicsObjectDeleteList = " + poofGraphicsObjectDeleteList); //TEST
+			System.out.println("potentialPoofLocationMap = " + potentialPoofLocationMap); //TEST
+			System.out.println("poofGraphicsObjectList = " + poofGraphicsObjectList); //TEST
+			for (Map.Entry<Integer, WorldPoint> entry : potentialPoofLocationDeleteMap.entrySet()) {
+				potentialPoofLocationMap.remove(entry.getKey(), entry.getValue());
+			}
+			poofGraphicsObjectList.removeAll(poofGraphicsObjectDeleteList);
+			poofGraphicsObjectDeleteList.clear();
+			potentialPoofLocationDeleteMap.clear();
+			System.out.println("potentialPoofLocationMap AFTER DELETING = " + potentialPoofLocationMap); //TEST
+			System.out.println("poofGraphicsObjectList AFTER DELETING = " + poofGraphicsObjectList); //TEST
+			shouldCleanListsMaps = false;
 		}
 	}
 
 	@Subscribe
 	public void onSoundEffectPlayed(SoundEffectPlayed soundEffectPlayed) {
-		if (soundEffectPlayed.getSource() != null && soundEffectPlayed.getSource() instanceof NPC) {
-			int sourceNpcId = ((NPC) soundEffectPlayed.getSource()).getId();
-			int soundId = soundEffectPlayed.getSoundId();
-			if ((EVENT_NPCS.contains(sourceNpcId) || (sourceNpcId == NpcID.STRANGE_PLANT)) && shouldMute(soundId)) {
-				soundEffectPlayed.consume();
+		int soundId = soundEffectPlayed.getSoundId();
+		if (soundEffectPlayed.getSource() != null) {
+			if (soundEffectPlayed.getSource() instanceof NPC) {
+				int sourceNpcId = ((NPC) soundEffectPlayed.getSource()).getId();
+				if ((EVENT_NPCS.contains(sourceNpcId) || (sourceNpcId == NpcID.STRANGE_PLANT)) && shouldMute(soundId)) {
+					soundEffectPlayed.consume();
+				}
+			}
+			//POOF_SOUND source is very likely not an npc, but graphicsobject
+			if (soundEffectPlayed.getSource() instanceof GraphicsObject) {
+				int sourceGOId = ((GraphicsObject) soundEffectPlayed.getSource()).getId();
+				if (sourceGOId == POOF_GRAPHICSOBJECT_ID && shouldMute(soundId)) {
+					soundEffectPlayed.consume();
+				}
 			}
 		}
 	}
 
 	@Subscribe
 	public void onAreaSoundEffectPlayed(AreaSoundEffectPlayed areaSoundEffectPlayed) {
-		if (areaSoundEffectPlayed.getSource() != null && areaSoundEffectPlayed.getSource() instanceof NPC) {
-			int sourceNpcId = ((NPC) areaSoundEffectPlayed.getSource()).getId();
-			int soundId = areaSoundEffectPlayed.getSoundId();
-			if ((EVENT_NPCS.contains(sourceNpcId) || (sourceNpcId == NpcID.STRANGE_PLANT)) && shouldMute(soundId)) {
-				areaSoundEffectPlayed.consume();
+		int soundId = areaSoundEffectPlayed.getSoundId();
+		if (areaSoundEffectPlayed.getSource() != null) {
+			if (areaSoundEffectPlayed.getSource() instanceof NPC) {
+				int sourceNpcId = ((NPC) areaSoundEffectPlayed.getSource()).getId();
+				if ((EVENT_NPCS.contains(sourceNpcId) || (sourceNpcId == NpcID.STRANGE_PLANT)) && shouldMute(soundId)) {
+					areaSoundEffectPlayed.consume();
+				}
+			}
+			//POOF_SOUND source is very likely not an npc, but a graphicsobject
+			if (areaSoundEffectPlayed.getSource() instanceof GraphicsObject) {
+				int sourceGOId = ((GraphicsObject) areaSoundEffectPlayed.getSource()).getId();
+				if (sourceGOId == POOF_GRAPHICSOBJECT_ID && shouldMute(soundId)) {
+					areaSoundEffectPlayed.consume();
+				}
 			}
 		}
 	}
-
 
 	@VisibleForTesting
 	boolean shouldDraw(Renderable renderable, boolean drawingUI) {
@@ -317,71 +401,28 @@ public class RandomEventHiderPlugin extends Plugin {
 				//the Prison Pete random only has Bob inviting you (not in the random), the maze random doesn't contain any relevant Npcs,
 				//Postie Pete doesn't show up in the Evil Twin random.
 				int npcIndex = npc.getIndex();
-
 				return !shouldHideBasedOnMaps(npcIndex, npcId);
-				//TODO: test if this makes Npcs show up again then they are on a map, or if they are perma hidden until despawned!
+				//TODO: do research to see if this makes Npcs show up again then they are on a map, or if they are perma hidden until despawned!
 			}
 		}
 		if (renderable instanceof GraphicsObject) {
 			GraphicsObject graphicsObject = (GraphicsObject) renderable;
-			int graphicsObjectId = graphicsObject.getId();
-			if (graphicsObjectId == POOF_GRAPHICSOBJECT_ID) {
-				System.out.println("It's a poof indeed! + "+System.currentTimeMillis());
+			if (graphicsObject.getId() == POOF_GRAPHICSOBJECT_ID) {
 				//All this code is written with the assumption that POOF_GRAPHICSOBJECT_ID is used for multiple npcs, e.g. imps, double agents etc.
 				//Otherwise a simple Id check would have been enough. If the current implementation turns out to be too crappy, I'll just swap to that.
-				LocalPoint graphicsObjectLocalPoint = graphicsObject.getLocation();
-				WorldPoint graphicsObjectWorldPoint = WorldPoint.fromLocalInstance(client, graphicsObjectLocalPoint);
-				System.out.println("Worldpoint poof = "+graphicsObjectWorldPoint);
-				System.out.println("randomPoofLocationList = "+randomPoofLocationList);
-				//Frogs spawn multiple Npcs, but only 1 poof (unsure what the logic is to what Npc poofs)
-				//So currently if a frog doesn't poof and e.g. an imp spawns the GraphicsObject on that exact tile, it'll hide it, but that's acceptable.
+				WorldPoint graphicsObjectWorldPoint = WorldPoint.fromLocalInstance(client, graphicsObject.getLocation());
+				System.out.println("Worldpoint poof at " + System.currentTimeMillis() + " = " + graphicsObjectWorldPoint); //TEST
+				System.out.println("potentialPoofLocationMap = " + potentialPoofLocationMap); //TEST
 
-				//=========================START OF RANDOM NOTES=========================
-				//The frogs could potentially be fixed, but can currently only come up with very crappy ideas, e.g.
-				//changing the ArrayList to a HashMap that stores npcIndex, WorldPoint
-				//OnNpcDespawned => if frog id => store index to ArrayList frogArrayList
-				//Add function:
-				/*
-				private int getKeyByValue(LinkedHashMap Map, WorldPoint point) {
-					if (Map.containsValue(point)) {
-						for (Object key: Map.keySet()){
-							if (Map.get(key).equals(point)) {
-								int npcIndex = (Integer) key;
-								return npcIndex;
-							}
-						}
-					}
-					return 0;
-				} */
-				//Then below some awful code like:
-				/*
-				if (randomPoofLocationMap.containsValue(graphicsObjectWorldPoint)) {
-					npcIndex = getKeyByValue(randomPoofLocationMap, WorldPoint);
-					if (npcIndex != 0) {
-						randomPoofLocationMap.remove(npcIndex, WorldPoint);
-						if (frogArrayList.contains(npcIndex)) {
-							for (int i = 0; i < frogArrayList.size(); i++) {
- 				        	   	randomPoofLocationMap.remove(frogArrayList.get(i));
-   						 	}
-   						 	frogArraylist.clear();
-   						}
-					}
-					return !hidePoof;
-				} */
-				//Would still be kinda screwed if there was another random event Npc on the same tile as a frog though...
-				//Would then maybe be fixed by also saving the Id of the Despawned Npc somewhere and checking for that, but fuck that.
-				//110% sure there is a **way** better solution but can't come up with it in the 5 minutes I'm spending on this.
-				//=========================END OF RANDOM NOTES=========================
-
-				if (randomPoofLocationList.contains(graphicsObjectWorldPoint)) {
+				if (potentialPoofLocationMap.containsValue(graphicsObjectWorldPoint)) {
 					graphicsObject.setFinished(true);
-					randomPoofLocationList.remove(graphicsObjectWorldPoint);
-					System.out.println("Poof should be hidden! + "+System.currentTimeMillis());
+					System.out.println("Poof should be hidden! + " + System.currentTimeMillis()); //TEST
 					return !hidePoof;
+				} else { //TEST
+					System.out.println("POOF IS NOT HIDDEN");
 				}
 			}
 		}
-
 		return true;
 	}
 
@@ -389,13 +430,15 @@ public class RandomEventHiderPlugin extends Plugin {
 		//If an Npc is hidden via the plugin, the poof should happen on the NpcSpawned location (will always happen due to code to prevent Npc flashing)
 		//If an Npc is not hidden via the plugin, the poof should happen briefly on the NpcSpawned location (unless both own and other are not hidden!) and also on the NpcDespawned location
 		//Tldr: Poof always happens on the spawn location (except when both own and other are NOT hidden), but only on the despawn location if the Npc is not hidden.
+		//Edit: turns out via ingame research that NpcDespawned always creates a poof
 		if (EVENT_NPCS.contains(npcId) || npcId == NpcID.STRANGE_PLANT) {
 			WorldPoint npcWorldPoint = npcActor.getWorldLocation();
+			int NpcGameCycle = client.getGameCycle();
 			if (NpcSpawned && shouldHideBasedOnMaps(npcIndex, npcId)) {
-				randomPoofLocationList.add(npcWorldPoint);
+				potentialPoofLocationMap.put(NpcGameCycle, npcWorldPoint);
 			}
-			if (!NpcSpawned && !shouldHideBasedOnMaps(npcIndex, npcId)) {
-				randomPoofLocationList.add(npcWorldPoint);
+			if (!NpcSpawned /*&& !shouldHideBasedOnMaps(npcIndex, npcId)*/) {
+				potentialPoofLocationMap.put(NpcGameCycle, npcWorldPoint);
 			}
 		}
 	}
@@ -422,10 +465,9 @@ public class RandomEventHiderPlugin extends Plugin {
 			if (mapContainsFrogId(ownRandomsMap)) {
 				return shouldHide(npcId, true);
 			}
-			if (mapContainsFrogId (otherRandomsMap)) {
+			if (mapContainsFrogId(otherRandomsMap)) {
 				return shouldHide(npcId, false);
-			}
-			//return (shouldHide(npcId, true) || shouldHide(npcId, false)); 	//At this point there is no frog on any of the maps. Hide to prevent flashing. => However, not needed since this return statement is already listed a couple lines further down.
+			}  //return (shouldHide(npcId, true) || shouldHide(npcId, false)); 	//At this point there is no frog on any of the maps. Hide to prevent flashing. => However, not needed since this return statement is already listed a couple lines further down.
 		}
 
 		//Strange plant does not interact with any person, so we'll hide them all if hideOwnStrangePlant is enabled.
