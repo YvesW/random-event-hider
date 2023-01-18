@@ -306,8 +306,9 @@ public class RandomEventHiderPlugin extends Plugin {
 				if (poofGraphicsObject.getPrevious() == null) { //Check if graphicsObject is destroyed conform https://discord.com/channels/301497432909414422/419891709883973642/740262232432050247
 					WorldPoint graphicsObjectWorldPoint = WorldPoint.fromLocalInstance(client, poofGraphicsObject.getLocation());
 					for (Map.Entry<Integer, WorldPoint> entry : potentialPoofLocationMap.entrySet()) {
-						if (entry.getValue() == graphicsObjectWorldPoint) {
+						if (entry.getValue().equals(graphicsObjectWorldPoint)) {
 							potentialPoofLocationDeleteMap.put(entry.getKey(), entry.getValue());
+							System.out.println("Got a Poof Map deletion Hit! potentialPoofLocationMap = "+potentialPoofLocationMap); //TEST
 							shouldCleanListsMaps = true;
 							break; //We'd only like to remove the oldest entry on this WorldPoint and considering LinkedHashMap keeps insertion order, this should be the first match, after which this inner-for loop should be broken out of.
 						}
@@ -324,6 +325,7 @@ public class RandomEventHiderPlugin extends Plugin {
 				int npcGameCycle = entry.getKey();
 				if (currentGameCycle - npcGameCycle > 150) {
 					potentialPoofLocationDeleteMap.put(entry.getKey(), entry.getValue());
+					System.out.println("Got a Poof Map deletion Hit DUE TO TIME OUT! potentialPoofLocationMap = "+potentialPoofLocationMap);
 					shouldCleanListsMaps = true;
 				}
 			}
@@ -419,7 +421,7 @@ public class RandomEventHiderPlugin extends Plugin {
 					System.out.println("Poof should be hidden! + " + System.currentTimeMillis()); //TEST
 					return !hidePoof;
 				} else { //TEST
-					System.out.println("POOF IS NOT HIDDEN");
+					System.out.println("POOF IS NOT HIDDEN AT WORLDPOINT "+graphicsObjectWorldPoint);
 				}
 			}
 		}
