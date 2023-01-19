@@ -504,7 +504,7 @@ public interface RandomEventHiderConfig extends Config
 			keyName = "hideOwnSurpriseExam",
 			name = "Hide your own Surprise Exam",
 			description = "Hide your own Surprise Exam/Dunce random event",
-			position = 22,
+			position = 21,
 			section = ownRandomsCategory
 	)
 	default boolean hideOwnSurpriseExam() {

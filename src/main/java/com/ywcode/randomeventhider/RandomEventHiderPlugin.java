@@ -105,8 +105,8 @@ public class RandomEventHiderPlugin extends Plugin {
 	private boolean hideOwnSandwichLady;
 	private boolean hideOwnSurpriseExam;
 	private boolean hideAllStrangePlant;
-	private boolean muteBob;
 	private boolean muteDwarf;
+	private boolean muteBob;
 	private boolean mutePoof;
 	private boolean muteOtherRandomSounds;
 	private boolean hidePoof;
