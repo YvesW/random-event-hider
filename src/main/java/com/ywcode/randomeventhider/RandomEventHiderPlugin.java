@@ -343,7 +343,6 @@ public class RandomEventHiderPlugin extends Plugin {
 				//Postie Pete doesn't show up in the Evil Twin random.
 				int npcIndex = npc.getIndex();
 				return !shouldHideBasedOnMaps(npcIndex, npcId);
-				//TODO: do research to see if this makes Npcs show up again then they are on a map, or if they are perma hidden until despawned!
 			}
 		}
 		if (renderable instanceof GraphicsObject) {
