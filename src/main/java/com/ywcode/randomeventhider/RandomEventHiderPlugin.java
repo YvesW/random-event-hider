@@ -23,10 +23,9 @@ import java.util.*;
 		description = "Adds the ability to hide specific random events that interact with you or with other players.",
 		tags = {"random event,hider,random event hider,ra hider"}
 )
-	//TODO: REMOVE TEST & println BEFORE COMMITTING TO PLUGIN HUB & a lot of comments/commented out methods!
-	//TODO: update readme with new functions, new config screenshot, patch notes probs
 
 public class RandomEventHiderPlugin extends Plugin {
+
 	private static final Set<Integer> EVENT_NPCS = ImmutableSet.of(
 			NpcID.BEE_KEEPER_6747,
 			NpcID.CAPT_ARNAV,
@@ -112,10 +111,13 @@ public class RandomEventHiderPlugin extends Plugin {
 	private boolean muteOtherRandomSounds;
 	private boolean hidePoof;
 
-	private LinkedHashMap<Integer, Integer> ownRandomsMap = new LinkedHashMap<Integer, Integer>();
-	private LinkedHashMap<Integer, Integer> otherRandomsMap = new LinkedHashMap<Integer, Integer>();
-	private final Set<WorldPoint> spawnedDespawnedNpcLocationsThisTick = new HashSet<>();
+	private final LinkedHashMap<Integer, Integer> ownRandomsMap = new LinkedHashMap<Integer, Integer>();
+	private final LinkedHashMap<Integer, Integer> otherRandomsMap = new LinkedHashMap<Integer, Integer>();
+	private final LinkedHashMap<WorldPoint, Integer> spawnedDespawnedNpcLocations = new LinkedHashMap<WorldPoint, Integer>();
+	private final LinkedHashMap<WorldPoint, Integer> spawnedDespawnedNpcLocationsDeletion = new LinkedHashMap<WorldPoint, Integer>();
 	//Should maybe use a custom class RandomEvent with stuff such as npcIndex, npcId, interactingWith, npcSpawnedLocation, gameCycleSpawned, npcDespawnedLocation, gameCycleDespawned
+
+	private static boolean shouldCleanMap = false;
 
 	private final Hooks.RenderableDrawListener drawListener = this::shouldDraw;
 
@@ -139,7 +141,8 @@ public class RandomEventHiderPlugin extends Plugin {
 		hooks.unregisterRenderableDrawListener(drawListener);
 		ownRandomsMap.clear();
 		otherRandomsMap.clear();
-		spawnedDespawnedNpcLocationsThisTick.clear();
+		spawnedDespawnedNpcLocations.clear();
+		spawnedDespawnedNpcLocationsDeletion.clear();
 	}
 
 	@Subscribe
@@ -239,7 +242,8 @@ public class RandomEventHiderPlugin extends Plugin {
 		if (gameStateChanged.getGameState() == GameState.LOGIN_SCREEN || gameStateChanged.getGameState() == GameState.HOPPING) {
 			ownRandomsMap.clear();
 			otherRandomsMap.clear();
-			spawnedDespawnedNpcLocationsThisTick.clear();
+			spawnedDespawnedNpcLocations.clear();
+			spawnedDespawnedNpcLocationsDeletion.clear();
 		}
 	}
 
@@ -249,10 +253,6 @@ public class RandomEventHiderPlugin extends Plugin {
 		int npcSpawnedIndex = npcSpawned.getNpc().getIndex();
 		Actor npcSpawnedActor = npcSpawned.getActor();
 		addPoofLocationToList(npcSpawnedId, npcSpawnedIndex, npcSpawnedActor, true);
-
-		if (EVENT_NPCS.contains(npcSpawned.getNpc().getId()) || npcSpawned.getNpc().getId() == NpcID.STRANGE_PLANT) { //TEST
-			System.out.println("Npc "+npcSpawned.getNpc().getId()+" (shouldHideBasedOnMaps: "+shouldHideBasedOnMaps(npcSpawned.getNpc().getIndex(), npcSpawned.getNpc().getId()) +") spawned at: "+System.currentTimeMillis()+" at location: "+npcSpawned.getNpc().getWorldLocation());
-		}
 	}
 
 	@Subscribe
@@ -270,15 +270,24 @@ public class RandomEventHiderPlugin extends Plugin {
 				otherRandomsMap.remove(npcDespawnedIndex, npcDespawnedId);
 			}
 		}
-
-		if (EVENT_NPCS.contains(npcDespawned.getNpc().getId()) || npcDespawned.getNpc().getId() == NpcID.STRANGE_PLANT) { //TEST
-			System.out.println("Npc "+npcDespawned.getNpc().getId()+" (shouldHideBasedOnMaps: "+shouldHideBasedOnMaps(npcDespawned.getNpc().getIndex(), npcDespawned.getNpc().getId()) +") despawned at: "+System.currentTimeMillis()+" at location: "+npcDespawned.getNpc().getWorldLocation());
-		}
 	}
 
 	@Subscribe
 	public void onGameTick(GameTick gameTick) {
-		spawnedDespawnedNpcLocationsThisTick.clear();
+		//Iterate through Map and remove entries that are >5 gameticks (150 GameCycles/ClientTicks) old
+		//Alternative is to e.g. add the GraphicsObjects to a list and iterate through them until getPrevious == null conform conform https://discord.com/channels/301497432909414422/419891709883973642/740262232432050247 but that did not seem to work that well.
+		//However, would also have to remove frogs etc. still this way (they spawn multiple Npcs, but only one GraphicsObject Poof)!
+		if (!spawnedDespawnedNpcLocations.isEmpty()) {
+			int currentGameCycle = client.getGameCycle();
+			for (Map.Entry<WorldPoint, Integer> entry : spawnedDespawnedNpcLocations.entrySet()) {
+				int npcGameCycle = entry.getValue();
+				if (currentGameCycle - npcGameCycle > 150) {
+					spawnedDespawnedNpcLocationsDeletion.put(entry.getKey(), entry.getValue());
+					shouldCleanMap = true;
+				}
+			}
+			cleanupMap(); //Alternative is to use an iterator
+		}
 	}
 
 	@Subscribe
@@ -343,14 +352,9 @@ public class RandomEventHiderPlugin extends Plugin {
 				//This code is written with the assumption that POOF_GRAPHICSOBJECT_ID is used for multiple npcs, e.g. imps, double agents etc.
 				//Otherwise a simple Id check would have been enough. If the current implementation turns out to be too crappy, I'll just swap to that.
 				WorldPoint graphicsObjectWorldPoint = WorldPoint.fromLocalInstance(client, graphicsObject.getLocation());
-				System.out.println("ShouldDraw code: spawnedDespawnedNpcLocationsThisTick" + System.currentTimeMillis() +" = " + spawnedDespawnedNpcLocationsThisTick); //TEST
-
-				if (spawnedDespawnedNpcLocationsThisTick.contains(graphicsObjectWorldPoint)) {
+				if (spawnedDespawnedNpcLocations.containsKey(graphicsObjectWorldPoint)) {
 					graphicsObject.setFinished(true);
-					System.out.println("Poof should be hidden! + " + System.currentTimeMillis()); //TEST
 					return !hidePoof;
-				} else { //TEST
-					System.out.println("POOF IS NOT HIDDEN AT WORLDPOINT "+graphicsObjectWorldPoint + " spawnedDespawnedNpcLocationsThisTick = "+spawnedDespawnedNpcLocationsThisTick);
 				}
 			}
 		}
@@ -365,11 +369,21 @@ public class RandomEventHiderPlugin extends Plugin {
 		if (EVENT_NPCS.contains(npcId) || npcId == NpcID.STRANGE_PLANT) {
 			WorldPoint npcWorldPoint = npcActor.getWorldLocation();
 			if (NpcSpawned && shouldHideBasedOnMaps(npcIndex, npcId)) {
-				spawnedDespawnedNpcLocationsThisTick.add(npcWorldPoint);
+				spawnedDespawnedNpcLocations.put(npcWorldPoint, client.getGameCycle());
 			}
 			if (!NpcSpawned /*&& !shouldHideBasedOnMaps(npcIndex, npcId)*/) {
-				spawnedDespawnedNpcLocationsThisTick.add(npcWorldPoint);
+				spawnedDespawnedNpcLocations.put(npcWorldPoint, client.getGameCycle());
 			}
+		}
+	}
+
+	private void cleanupMap() {
+		if (shouldCleanMap) {
+			for (Map.Entry<WorldPoint, Integer> entry : spawnedDespawnedNpcLocationsDeletion.entrySet()) {
+				spawnedDespawnedNpcLocations.remove(entry.getKey(), entry.getValue());
+			}
+			spawnedDespawnedNpcLocationsDeletion.clear();
+			shouldCleanMap = false;
 		}
 	}
 
@@ -555,70 +569,3 @@ public class RandomEventHiderPlugin extends Plugin {
 		return configManager.getConfig(RandomEventHiderConfig.class);
 	}
 }
-
-
-	//TODO: delete this
-	/*
-	@Subscribe
-	public void onGraphicsObjectCreated(GraphicsObjectCreated graphicsObjectCreated) {
-		int graphicsObjectId = graphicsObjectCreated.getGraphicsObject().getId();
-		if (graphicsObjectId == POOF_GRAPHICSOBJECT_ID) {
-			System.out.println("Poof spawned! Object = "+graphicsObjectCreated.getGraphicsObject() +" time = "+ System.currentTimeMillis() + " at worldpoint: " + WorldPoint.fromLocalInstance(client, graphicsObjectCreated.getGraphicsObject().getLocation())); //TEST
-			poofGraphicsObjectList.add(graphicsObjectCreated.getGraphicsObject());
-			System.out.println("poofGraphicsObjectList = "+poofGraphicsObjectList); //TEST
-		}
-	}
-
-	@Subscribe
-	public void onClientTick(ClientTick clientTick) {
-		/* if (!poofGraphicsObjectList.isEmpty()) {
-			for (int i = 0; i < poofGraphicsObjectList.size(); i++) {
-				GraphicsObject poofGraphicsObject = poofGraphicsObjectList.get(i);
-				if (poofGraphicsObject.getPrevious() == null) { //Check if graphicsObject is destroyed conform https://discord.com/channels/301497432909414422/419891709883973642/740262232432050247
-					WorldPoint graphicsObjectWorldPoint = WorldPoint.fromLocalInstance(client, poofGraphicsObject.getLocation());
-					System.out.println("Poof animation despawned! Object = "+poofGraphicsObjectList.get(i)+" time = "+System.currentTimeMillis()+" graphicsObjectWorldPoint = "+graphicsObjectWorldPoint);
-					for (Map.Entry<Integer, WorldPoint> entry : potentialPoofLocationMap.entrySet()) {
-						if (entry.getValue().equals(graphicsObjectWorldPoint)) {
-							potentialPoofLocationDeleteMap.put(entry.getKey(), entry.getValue());
-							System.out.println("Got a Poof Map deletion Hit! potentialPoofLocationMap = "+potentialPoofLocationMap); //TEST
-							shouldCleanListsMaps = true;
-							break; //We'd only like to remove the oldest entry on this WorldPoint and considering LinkedHashMap keeps insertion order, this should be the first match, after which this inner-for loop should be broken out of.
-						}
-					}
-					poofGraphicsObjectDeleteList.add(poofGraphicsObject);
-					shouldCleanListsMaps = true;
-				}
-			}
-			cleanupListsMaps();
-		}
-		if (!potentialPoofLocationMap.isEmpty()) { //Clear leftover frogs after 3s
-			int currentGameCycle = client.getGameCycle();
-			for (Map.Entry<Integer, WorldPoint> entry : potentialPoofLocationMap.entrySet()) {
-				int npcGameCycle = entry.getKey();
-				if (currentGameCycle - npcGameCycle > 150) {
-					potentialPoofLocationDeleteMap.put(entry.getKey(), entry.getValue());
-					System.out.println("Got a Poof Map deletion Hit DUE TO TIME OUT! "+System.currentTimeMillis()+" potentialPoofLocationMap = "+potentialPoofLocationMap + "key = "+entry.getKey()+" value = "+entry.getValue()+" currentGameCycle = "+currentGameCycle);
-					shouldCleanListsMaps = true;
-				}
-			}
-			cleanupListsMaps();
-		}
-	}
-
-		private void cleanupListsMaps() {
-		if (shouldCleanListsMaps) {
-			//System.out.println("potentialPoofLocationDeleteMap = " + potentialPoofLocationDeleteMap); //TEST
-			//System.out.println("poofGraphicsObjectDeleteList = " + poofGraphicsObjectDeleteList); //TEST
-			//System.out.println("potentialPoofLocationMap = " + potentialPoofLocationMap); //TEST
-			//System.out.println("poofGraphicsObjectList = " + poofGraphicsObjectList); //TEST
-			for (Map.Entry<Integer, WorldPoint> entry : potentialPoofLocationDeleteMap.entrySet()) {
-				potentialPoofLocationMap.remove(entry.getKey(), entry.getValue());
-			}
-			poofGraphicsObjectList.removeAll(poofGraphicsObjectDeleteList);
-			poofGraphicsObjectDeleteList.clear();
-			potentialPoofLocationDeleteMap.clear();
-			//System.out.println("potentialPoofLocationMap AFTER DELETING = " + potentialPoofLocationMap); //TEST
-			//System.out.println("poofGraphicsObjectList AFTER DELETING = " + poofGraphicsObjectList); //TEST
-			shouldCleanListsMaps = false;
-		}
-	}*/
