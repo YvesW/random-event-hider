@@ -293,40 +293,30 @@ public class RandomEventHiderPlugin extends Plugin {
 	@Subscribe
 	public void onSoundEffectPlayed(SoundEffectPlayed soundEffectPlayed) {
 		int soundId = soundEffectPlayed.getSoundId();
-		if (soundEffectPlayed.getSource() != null) {
-			if (soundEffectPlayed.getSource() instanceof NPC) {
-				int sourceNpcId = ((NPC) soundEffectPlayed.getSource()).getId();
-				if ((EVENT_NPCS.contains(sourceNpcId) || (sourceNpcId == NpcID.STRANGE_PLANT)) && shouldMute(soundId)) {
-					soundEffectPlayed.consume();
-				}
+		if (soundEffectPlayed.getSource() != null && soundEffectPlayed.getSource() instanceof NPC) {
+			int sourceNpcId = ((NPC) soundEffectPlayed.getSource()).getId();
+			if ((EVENT_NPCS.contains(sourceNpcId) || (sourceNpcId == NpcID.STRANGE_PLANT)) && shouldMute(soundId)) {
+				soundEffectPlayed.consume();
 			}
-			//POOF_SOUND source is very likely not an npc, but graphicsobject
-			if (soundEffectPlayed.getSource() instanceof GraphicsObject) {
-				int sourceGOId = ((GraphicsObject) soundEffectPlayed.getSource()).getId();
-				if (sourceGOId == POOF_GRAPHICSOBJECT_ID && shouldMute(soundId)) {
-					soundEffectPlayed.consume();
-				}
-			}
+		}
+		//POOF_SOUND source is null apparently (found through ingame experimentation)
+		if (soundId == POOF_SOUND && shouldMute(soundId)) {
+			soundEffectPlayed.consume();
 		}
 	}
 
 	@Subscribe
 	public void onAreaSoundEffectPlayed(AreaSoundEffectPlayed areaSoundEffectPlayed) {
 		int soundId = areaSoundEffectPlayed.getSoundId();
-		if (areaSoundEffectPlayed.getSource() != null) {
-			if (areaSoundEffectPlayed.getSource() instanceof NPC) {
-				int sourceNpcId = ((NPC) areaSoundEffectPlayed.getSource()).getId();
-				if ((EVENT_NPCS.contains(sourceNpcId) || (sourceNpcId == NpcID.STRANGE_PLANT)) && shouldMute(soundId)) {
-					areaSoundEffectPlayed.consume();
-				}
+		if (areaSoundEffectPlayed.getSource() != null && areaSoundEffectPlayed.getSource() instanceof NPC) {
+			int sourceNpcId = ((NPC) areaSoundEffectPlayed.getSource()).getId();
+			if ((EVENT_NPCS.contains(sourceNpcId) || (sourceNpcId == NpcID.STRANGE_PLANT)) && shouldMute(soundId)) {
+				areaSoundEffectPlayed.consume();
 			}
-			//POOF_SOUND source is very likely not an npc, but a graphicsobject
-			if (areaSoundEffectPlayed.getSource() instanceof GraphicsObject) {
-				int sourceGOId = ((GraphicsObject) areaSoundEffectPlayed.getSource()).getId();
-				if (sourceGOId == POOF_GRAPHICSOBJECT_ID && shouldMute(soundId)) {
-					areaSoundEffectPlayed.consume();
-				}
-			}
+		}
+		//POOF_SOUND source is null apparently (found through ingame experimentation)
+		if (soundId == POOF_SOUND && shouldMute(soundId)) {
+			areaSoundEffectPlayed.consume();
 		}
 	}
 

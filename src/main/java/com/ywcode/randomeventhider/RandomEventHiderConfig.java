@@ -548,7 +548,7 @@ public interface RandomEventHiderConfig extends Config
 	@ConfigItem(
 			keyName = "mutePoof",
 			name = "Mute the Poof",
-			description = "Mutes random events' poof sound",
+			description = "Mutes the poof (smoke) sound",
 			position = 3,
 			section = miscCategory
 	)
@@ -570,7 +570,7 @@ public interface RandomEventHiderConfig extends Config
 	@ConfigItem(
 			keyName = "hidePoof",
 			name = "Hide the Poof animation",
-			description = "Hides random events' poof animation",
+			description = "Hides random events' poof (smoke) animation",
 			position = 5,
 			section = miscCategory
 	)
