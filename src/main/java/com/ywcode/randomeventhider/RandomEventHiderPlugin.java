@@ -300,7 +300,7 @@ public class RandomEventHiderPlugin extends Plugin {
 			}
 		}
 		//POOF_SOUND source is null apparently (found through ingame experimentation)
-		if (soundId == POOF_SOUND && shouldMute(soundId)) {
+		if ((soundId == POOF_SOUND || soundId == EVIL_BOB_MEOW || soundId == DRUNKEN_DWARF_SOUND) && shouldMute(soundId)) {
 			soundEffectPlayed.consume();
 		}
 	}
@@ -315,7 +315,7 @@ public class RandomEventHiderPlugin extends Plugin {
 			}
 		}
 		//POOF_SOUND source is null apparently (found through ingame experimentation)
-		if (soundId == POOF_SOUND && shouldMute(soundId)) {
+		if ((soundId == POOF_SOUND || soundId == EVIL_BOB_MEOW || soundId == DRUNKEN_DWARF_SOUND) && shouldMute(soundId)) {
 			areaSoundEffectPlayed.consume();
 		}
 	}
