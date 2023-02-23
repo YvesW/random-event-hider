@@ -206,9 +206,9 @@ public class RandomEventHiderPlugin extends Plugin {
 	}
 
 	@Subscribe
-	public void onInteractingChanged(InteractingChanged event) {
-		Actor source = event.getSource();
-		Actor target = event.getTarget();
+	public void onInteractingChanged(InteractingChanged interactingChanged) {
+		Actor source = interactingChanged.getSource();
+		Actor target = interactingChanged.getTarget();
 		Player player = client.getLocalPlayer();
 
 		if (player != null && (source instanceof NPC) && (target instanceof Player) && EVENT_NPCS.contains(((NPC) source).getId())) {
