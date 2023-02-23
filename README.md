@@ -23,8 +23,8 @@ Thanks to Annex/Desaus for the suggestion!
 ## Changelog
 
 01-2023: among others...
-- Add muting sounds made by random events.
-- Add hiding the 'Poof' smoke GraphicsObject created by random events.
+- Added muting sounds made by random events.
+- Added hiding the 'Poof' smoke GraphicsObject created by random events.
 - Added the 'Miscellaneous' category in the config panel.
 - Moved 'Hide ALL Strange Plants' config option.
 - Fixed random events not being hidden in specific instances such as the POH.
