@@ -108,7 +108,7 @@ public class RandomEventHiderPlugin extends Plugin {
 	private boolean hideAllStrangePlant;
 	private boolean muteDwarf;
 	private boolean muteBob;
-	private boolean muteFrog;
+	private boolean muteFrogs;
 	private boolean mutePoof;
 	private boolean muteOtherRandomSounds;
 	private boolean hidePoof;
@@ -202,7 +202,7 @@ public class RandomEventHiderPlugin extends Plugin {
 		hideAllStrangePlant = config.hideAllStrangePlant();
 		muteDwarf = config.muteDwarf();
 		muteBob = config.muteBob();
-		muteFrog = config.muteFrog();
+		muteFrogs = config.muteFrogs();
 		mutePoof = config.mutePoof();
 		muteOtherRandomSounds = config.muteOtherRandomSounds();
 		hidePoof = config.hidePoof();
@@ -550,7 +550,7 @@ public class RandomEventHiderPlugin extends Plugin {
 			case EVIL_BOB_MEOW:
 				return muteBob;
 			case FROG_SPLASH:
-				return muteFrog;
+				return muteFrogs;
 			case POOF_SOUND:
 				return mutePoof;
 			//TODO: potentially add the frogs splashing sound if you ever find the sound id

@@ -546,13 +546,13 @@ public interface RandomEventHiderConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "muteFrog",
+			keyName = "muteFrogs",
 			name = "Mute the Frogs",
 			description = "Mutes the splashes by the Frogs",
 			position = 3,
 			section = miscCategory
 	)
-	default boolean muteFrog() {
+	default boolean muteFrogs() {
 		return false;
 	}
 
