@@ -546,10 +546,21 @@ public interface RandomEventHiderConfig extends Config
 	}
 
 	@ConfigItem(
+			keyName = "muteFrog",
+			name = "Mute the Frogs",
+			description = "Mutes the splashes by the Frogs",
+			position = 3,
+			section = miscCategory
+	)
+	default boolean muteFrog() {
+		return false;
+	}
+
+	@ConfigItem(
 			keyName = "mutePoof",
 			name = "Mute the Poof",
 			description = "Mutes the poof (smoke) sound",
-			position = 3,
+			position = 4,
 			section = miscCategory
 	)
 	default boolean mutePoof() {
@@ -560,7 +571,7 @@ public interface RandomEventHiderConfig extends Config
 			keyName = "muteOtherRandomSounds",
 			name = "Mute other sound effects",
 			description = "Mutes other sound effects (i.e. sound effects not listed above) made by random events",
-			position = 4,
+			position = 5,
 			section = miscCategory
 	)
 	default boolean muteOtherRandomSounds() {
@@ -571,7 +582,7 @@ public interface RandomEventHiderConfig extends Config
 			keyName = "hidePoof",
 			name = "Hide the Poof animation",
 			description = "Hides random events' poof (smoke) animation",
-			position = 5,
+			position = 6,
 			section = miscCategory
 	)
 	default boolean hidePoof() {

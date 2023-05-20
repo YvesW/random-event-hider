@@ -58,6 +58,7 @@ public class RandomEventHiderPlugin extends Plugin {
 	private static final int POOF_SOUND = 1930;
 	private static final int DRUNKEN_DWARF_SOUND = 2297;
 	private static final int EVIL_BOB_MEOW = 333; //Apparently also cat hiss
+	private static final int FROG_SPLASH = 838; //Thanks veknow
 	private static final int POOF_GRAPHICSOBJECT_ID = 86; //Apparently called GREY_BUBBLE_TELEPORT in GraphicID.java
 
 	private boolean hideOtherBeekeeper;
@@ -107,6 +108,7 @@ public class RandomEventHiderPlugin extends Plugin {
 	private boolean hideAllStrangePlant;
 	private boolean muteDwarf;
 	private boolean muteBob;
+	private boolean muteFrog;
 	private boolean mutePoof;
 	private boolean muteOtherRandomSounds;
 	private boolean hidePoof;
@@ -200,6 +202,7 @@ public class RandomEventHiderPlugin extends Plugin {
 		hideAllStrangePlant = config.hideAllStrangePlant();
 		muteDwarf = config.muteDwarf();
 		muteBob = config.muteBob();
+		muteFrog = config.muteFrog();
 		mutePoof = config.mutePoof();
 		muteOtherRandomSounds = config.muteOtherRandomSounds();
 		hidePoof = config.hidePoof();
@@ -300,7 +303,7 @@ public class RandomEventHiderPlugin extends Plugin {
 			}
 		}
 		//POOF_SOUND source is null apparently (found through ingame experimentation)
-		if ((soundId == POOF_SOUND || soundId == EVIL_BOB_MEOW || soundId == DRUNKEN_DWARF_SOUND) && shouldMute(soundId)) {
+		if ((soundId == POOF_SOUND || soundId == EVIL_BOB_MEOW || soundId == DRUNKEN_DWARF_SOUND || soundId == FROG_SPLASH) && shouldMute(soundId)) {
 			soundEffectPlayed.consume();
 		}
 	}
@@ -315,7 +318,7 @@ public class RandomEventHiderPlugin extends Plugin {
 			}
 		}
 		//POOF_SOUND source is null apparently (found through ingame experimentation)
-		if ((soundId == POOF_SOUND || soundId == EVIL_BOB_MEOW || soundId == DRUNKEN_DWARF_SOUND) && shouldMute(soundId)) {
+		if ((soundId == POOF_SOUND || soundId == EVIL_BOB_MEOW || soundId == DRUNKEN_DWARF_SOUND || soundId == FROG_SPLASH) && shouldMute(soundId)) {
 			areaSoundEffectPlayed.consume();
 		}
 	}
@@ -546,6 +549,8 @@ public class RandomEventHiderPlugin extends Plugin {
 				return muteDwarf;
 			case EVIL_BOB_MEOW:
 				return muteBob;
+			case FROG_SPLASH:
+				return muteFrog;
 			case POOF_SOUND:
 				return mutePoof;
 			//TODO: potentially add the frogs splashing sound if you ever find the sound id

@@ -21,6 +21,8 @@ If you experience any issues or have any concerns, please reach out to YvesW via
 Thanks to Annex/Desaus for the suggestion!
 
 ## Changelog
+05-2023:
+- Added the config option to mute the splashes of the frogs (see 'Miscellaneous').
 
 01-2023: among others...
 - Added muting sounds made by random events.
