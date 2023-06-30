@@ -35,7 +35,7 @@ public class RandomEventHiderPlugin extends Plugin {
 			NpcID.EVIL_BOB, NpcID.EVIL_BOB_6754,
 			NpcID.FLIPPA_6744,
 			NpcID.FREAKY_FORESTER_6748,
-			NpcID.FROG_5429, NpcID.FROG_5430, NpcID.FROG_5431, NpcID.FROG_5432, NpcID.FROG_5833, NpcID.FROG,
+			NpcID.FROG_5429, NpcID.FROG_5430, NpcID.FROG_5431, NpcID.FROG_5432, NpcID.FROG, NpcID.FROG_PRINCE, NpcID.FROG_PRINCESS,
 			NpcID.GENIE, NpcID.GENIE_327,
 			NpcID.GILES, NpcID.GILES_5441,
 			NpcID.LEO_6746,
@@ -52,7 +52,7 @@ public class RandomEventHiderPlugin extends Plugin {
 	);
 
 	private static final Set<Integer> FROGS_NPCS = ImmutableSet.of(
-			NpcID.FROG_5429, NpcID.FROG_5430, NpcID.FROG_5431, NpcID.FROG_5432, NpcID.FROG_5833, NpcID.FROG
+			NpcID.FROG_5429, NpcID.FROG_5430, NpcID.FROG_5431, NpcID.FROG_5432, NpcID.FROG, NpcID.FROG_PRINCE, NpcID.FROG_PRINCESS
 	);
 
 	private static final int POOF_SOUND = 1930;
@@ -384,8 +384,9 @@ public class RandomEventHiderPlugin extends Plugin {
 				Map.containsValue(NpcID.FROG_5430) ||
 				Map.containsValue(NpcID.FROG_5431) ||
 				Map.containsValue(NpcID.FROG_5432) ||
-				Map.containsValue(NpcID.FROG_5833) ||
-				Map.containsValue(NpcID.FROG);
+				Map.containsValue(NpcID.FROG) ||
+				Map.containsValue(NpcID.FROG_PRINCE) ||
+				Map.containsValue(NpcID.FROG_PRINCESS);
 	}
 
 	private boolean shouldHideBasedOnMaps(int npcIndex, int npcId) {
@@ -429,7 +430,8 @@ public class RandomEventHiderPlugin extends Plugin {
 				case NpcID.FROG_5430:
 				case NpcID.FROG_5431:
 				case NpcID.FROG_5432:
-				case NpcID.FROG_5833:
+				case NpcID.FROG_PRINCE:
+				case NpcID.FROG_PRINCESS:
 				case NpcID.FROG:
 					return hideOwnKissTheFrog;
 				case NpcID.GENIE:
@@ -490,7 +492,8 @@ public class RandomEventHiderPlugin extends Plugin {
 				case NpcID.FROG_5430:
 				case NpcID.FROG_5431:
 				case NpcID.FROG_5432:
-				case NpcID.FROG_5833:
+				case NpcID.FROG_PRINCE:
+				case NpcID.FROG_PRINCESS:
 				case NpcID.FROG:
 					return hideOtherKissTheFrog;
 				case NpcID.GENIE:
