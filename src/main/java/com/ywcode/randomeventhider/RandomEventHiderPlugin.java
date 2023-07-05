@@ -359,7 +359,7 @@ public class RandomEventHiderPlugin extends Plugin {
 		//Tldr: Poof always happens on the spawn location (except when both own and other are NOT hidden), but only on the despawn location if the Npc is not hidden.
 		//Edit: turns out via research that NpcDespawned always creates a poof
 		if (EVENT_NPCS.contains(npcId) || npcId == NpcID.STRANGE_PLANT) {
-			WorldPoint npcWorldPoint = npcActor.getWorldLocation();
+			WorldPoint npcWorldPoint = npcActor.getWorldLocation(); // TODO: Potentially try 	WorldPoint npcWorldPoint = WorldPoint.fromLocalInstance(client, npcActor.getLocalLocation()); at some point to fix the poof in the POH?
 			if (NpcSpawned && shouldHideBasedOnMaps(npcIndex, npcId)) {
 				spawnedDespawnedNpcLocations.put(npcWorldPoint, client.getGameCycle());
 			}
