@@ -1,11 +1,11 @@
 # Random Event Hider
 Also annoyed by those pesky random events? **This plugin adds the ability to hide specific random events.** You can hide your own and/or other players' random events on a per random event basis. That way you can hide the events, but you won't miss your free agility experience or stale baguette!
 
-*It is recommended to disable "Random Events" in the default Entity Hider plugin if you wish specific random events to be visible.*
+*It is recommended to disable "Random Events" and "Hide Attackers" in the default Entity Hider plugin if you wish specific random events to be visible.*
 
 **This plugin adds the following features:**
 - Hide your own or others' random events on a per event and per interaction basis. Don't miss out on your own Lamps, Books of knowledge and Stale baguettes!
-- Mute sounds made by random events, such as Evil Bob's meow/hiss and the Drunken Dwarf.
+- Mute sounds made by random events, such as Evil Bob's meow/hiss, the Drunken Dwarf and the Frogs.
 - Hide the 'Poof' smoke animation that random events make.
 
 As can be seen in the example config below, this plugin allows for more customizability than the default Entity Hider plugin.<br>
