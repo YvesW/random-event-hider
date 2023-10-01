@@ -21,7 +21,7 @@ import java.util.*;
 @PluginDescriptor(
 		name = "Random Event Hider",
 		description = "Adds the ability to hide specific random events that interact with you or with other players.",
-		tags = {"random event,hider,random event hider,ra hider,messenger,strange plant,poof,smoke,star mining,forestry"}
+		tags = {"random event,hider,random event hider,ra hider,messenger,strange plant,poof,smoke,star mining,shooting stars,forestry"}
 )
 
 public class RandomEventHiderPlugin extends Plugin {
