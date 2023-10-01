@@ -21,12 +21,12 @@ import java.util.*;
 @PluginDescriptor(
 		name = "Random Event Hider",
 		description = "Adds the ability to hide specific random events that interact with you or with other players.",
-		tags = {"random event,hider,random event hider,ra hider"}
+		tags = {"random event,hider,random event hider,ra hider,messenger,strange plant,poof,smoke,star mining,forestry"}
 )
 
 public class RandomEventHiderPlugin extends Plugin {
 
-	private static final Set<Integer> EVENT_NPCS = ImmutableSet.of(
+	private static final Set<Integer> RANDOM_EVENT_NPCS = ImmutableSet.of(
 			NpcID.BEE_KEEPER_6747,
 			NpcID.CAPT_ARNAV,
 			NpcID.DR_JEKYLL, NpcID.DR_JEKYLL_314,
@@ -51,6 +51,19 @@ public class RandomEventHiderPlugin extends Plugin {
 			NpcID.SERGEANT_DAMIEN_6743
 	);
 
+	private static final Set<Integer> MESSENGER_NPCS = ImmutableSet.of(
+			//Regicide, The Frozen Door, and 4x Into the Tombs respectively
+			NpcID.KINGS_MESSENGER, NpcID.MESSENGER, NpcID.MESSENGER_11814, NpcID.MESSENGER_11815, NpcID.MESSENGER_11816, NpcID.MESSENGER_11817
+	);
+
+	private static final Set<Integer> EVENT_NPCS; // Combine sets because everything that happens for RANDOM_EVENT_NPCS should also happen for MESSENGER_NPCS and they are technically different types of NPCs.
+	static {
+		Set<Integer> combinedSets = new HashSet<>();
+		combinedSets.addAll(RANDOM_EVENT_NPCS);
+		combinedSets.addAll(MESSENGER_NPCS);
+		EVENT_NPCS = Collections.unmodifiableSet(combinedSets);
+	}
+
 	private static final Set<Integer> FROGS_NPCS = ImmutableSet.of(
 			NpcID.FROG_5429, NpcID.FROG_5430, NpcID.FROG_5431, NpcID.FROG_5432, NpcID.FROG, NpcID.FROG_PRINCE, NpcID.FROG_PRINCESS
 	);
@@ -61,6 +74,8 @@ public class RandomEventHiderPlugin extends Plugin {
 	private static final int FROG_SPLASH = 838; //Thanks veknow
 	private static final int POOF_GRAPHICSOBJECT_ID = 86; //Apparently called GREY_BUBBLE_TELEPORT in GraphicID.java
 
+	// ------------- Wall of config vars -------------
+	// Vars are quite heavily cached so could also just config.configKey tbh
 	private boolean hideOtherBeekeeper;
 	private boolean hideOtherCaptArnav;
 	private boolean hideOtherNiles;
@@ -112,6 +127,8 @@ public class RandomEventHiderPlugin extends Plugin {
 	private boolean mutePoof;
 	private boolean muteOtherRandomSounds;
 	private boolean hidePoof;
+	private boolean hideOtherMessengers;
+	// ------------- End of wall of config vars -------------
 
 	private final LinkedHashMap<Integer, Integer> ownRandomsMap = new LinkedHashMap<Integer, Integer>();
 	private final LinkedHashMap<Integer, Integer> otherRandomsMap = new LinkedHashMap<Integer, Integer>();
@@ -206,6 +223,7 @@ public class RandomEventHiderPlugin extends Plugin {
 		mutePoof = config.mutePoof();
 		muteOtherRandomSounds = config.muteOtherRandomSounds();
 		hidePoof = config.hidePoof();
+		hideOtherMessengers = config.hideOtherMessengers();
 	}
 
 	@Subscribe
@@ -541,6 +559,13 @@ public class RandomEventHiderPlugin extends Plugin {
 				case NpcID.RICK_TURPENTINE:
 				case NpcID.RICK_TURPENTINE_376:
 					return hideOtherRickTurpentine;
+				case NpcID.KINGS_MESSENGER:
+				case NpcID.MESSENGER:
+				case NpcID.MESSENGER_11814:
+				case NpcID.MESSENGER_11815:
+				case NpcID.MESSENGER_11816:
+				case NpcID.MESSENGER_11817:
+					return hideOtherMessengers;
 			}
 		}
 		return false;
@@ -556,7 +581,6 @@ public class RandomEventHiderPlugin extends Plugin {
 				return muteFrogs;
 			case POOF_SOUND:
 				return mutePoof;
-			//TODO: potentially add the frogs splashing sound if you ever find the sound id
 		}
 		return muteOtherRandomSounds;
 	}

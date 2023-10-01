@@ -589,4 +589,15 @@ public interface RandomEventHiderConfig extends Config
 		return true;
 	}
 
+	@ConfigItem(
+			keyName = "hideOtherMessengers",
+			name = "Hide others' messengers",
+			description = "Hide the King's Messenger (Regicide), Messenger (The Frozen Door), and Messenger (Into the Tombs) of other players",
+			position = 7,
+			section = miscCategory
+	)
+	default boolean hideOtherMessengers() {
+		return false;
+	}
+
 }

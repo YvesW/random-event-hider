@@ -4,9 +4,10 @@ Also annoyed by those pesky random events? **This plugin adds the ability to hid
 *It is recommended to disable "Random Events" and "Hide Attackers" in the default Entity Hider plugin if you wish specific random events to be visible.*
 
 **This plugin adds the following features:**
-- Hide your own or others' random events on a per event and per interaction basis. Don't miss out on your own Lamps, Books of knowledge and Stale baguettes!
-- Mute sounds made by random events, such as Evil Bob's meow/hiss, the Drunken Dwarf and the Frogs.
-- Hide the 'Poof' smoke animation that random events make.
+- Hide your own or others' random events on a per event and per interaction basis, including the Strange Plant. Don't miss out on your own Lamps, Books of knowledge and Stale baguettes!
+- Mute sounds made by random events, such as Evil Bob's meow/hiss, the Drunken Dwarf, and the Frogs.
+- Hide the 'Poof' smoke animation created by random events.
+- Hide others' messengers (Regicide, The Frozen Door, and Into the Tombs).
 
 As can be seen in the example config below, this plugin allows for more customizability than the default Entity Hider plugin.<br>
 For example, hiding all random events except your own Genie, Quiz Master, Sandwich Lady and Surprise Exam:
@@ -21,8 +22,11 @@ If you experience any issues or have any concerns, please reach out to YvesW via
 Thanks to Annex/Desaus for the suggestion!
 
 ## Changelog
+09-2023:
+- Added a config option to hide other's messengers (see 'Miscellaneous').
+
 05-2023:
-- Added the config option to mute the splashes of the frogs (see 'Miscellaneous').
+- Added a config option to mute the splashes of the frogs (see 'Miscellaneous').
 
 01-2023: among others...
 - Added muting sounds made by random events.
