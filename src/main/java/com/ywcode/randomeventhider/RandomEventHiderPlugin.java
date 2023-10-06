@@ -506,7 +506,7 @@ public class RandomEventHiderPlugin extends Plugin {
 				case NpcID.RICK_TURPENTINE_376:
 					return hideOwnRickTurpentine;
 			}
-		} else if (!OwnEvent) {
+		} else { //if (!OwnEvent)
 			switch (id) {
 				case NpcID.BEE_KEEPER_6747:
 					return hideOtherBeekeeper;
