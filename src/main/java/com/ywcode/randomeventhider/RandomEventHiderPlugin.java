@@ -73,6 +73,7 @@ public class RandomEventHiderPlugin extends Plugin {
 	private static final int EVIL_BOB_MEOW = 333; //Apparently also cat hiss
 	private static final int FROG_SPLASH = 838; //Thanks veknow
 	private static final int POOF_GRAPHICSOBJECT_ID = 86; //Apparently called GREY_BUBBLE_TELEPORT in GraphicID.java
+	private static final int FROG_REALM_REGIONID = 9802;
 
 	// ------------- Wall of config vars -------------
 	// Vars are quite heavily cached so could also just config.configKey tbh
@@ -137,6 +138,7 @@ public class RandomEventHiderPlugin extends Plugin {
 	//Should maybe use a custom class RandomEvent with stuff such as npcIndex, npcId, interactingWith, npcSpawnedLocation, gameCycleSpawned, npcDespawnedLocation, gameCycleDespawned
 
 	private static boolean shouldCleanMap = false;
+	private static int currentRegionID = 0;
 
 	private final Hooks.RenderableDrawListener drawListener = this::shouldDraw;
 
@@ -298,6 +300,7 @@ public class RandomEventHiderPlugin extends Plugin {
 		//Iterate through Map and remove entries that are >5 gameticks (150 GameCycles/ClientTicks) old
 		//Alternative is to e.g. add the GraphicsObjects to a list and iterate through them until getPrevious == null conform conform https://discord.com/channels/301497432909414422/419891709883973642/740262232432050247 but that did not seem to work that well.
 		//However, would also have to remove frogs etc. still this way (they spawn multiple Npcs, but only one GraphicsObject Poof)!
+		currentRegionID = WorldPoint.fromLocalInstance(client, client.getLocalPlayer().getLocalLocation()).getRegionID(); //Somewhat caching this here instead of putting it into ShouldHideBasedOnMaps because then it can get called multiple times per gameCycle around e.g. prif stars.
 		if (!spawnedDespawnedNpcLocations.isEmpty()) {
 			int currentGameCycle = client.getGameCycle();
 			for (Map.Entry<WorldPoint, Integer> entry : spawnedDespawnedNpcLocations.entrySet()) {
@@ -408,6 +411,11 @@ public class RandomEventHiderPlugin extends Plugin {
 	}
 
 	private boolean shouldHideBasedOnMaps(int npcIndex, int npcId) {
+		if (currentRegionID == FROG_REALM_REGIONID) {
+			//Disable in frog realm so https://github.com/YvesW/random-event-hider/issues/4 doesn't happen
+			return false;
+		}
+
 		if (ownRandomsMap.containsKey(npcIndex)) {
 			return shouldHide(npcId, true);
 		}
