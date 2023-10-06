@@ -433,7 +433,7 @@ public class RandomEventHiderPlugin extends Plugin {
 			}  //return (shouldHide(npcId, true) || shouldHide(npcId, false)); 	//At this point there is no frog on any of the maps. Hide to prevent flashing. => However, not needed since this return statement is already listed a couple lines further down.
 		}
 
-		//Strange plant does not interact with any person, so we'll hide them all if hideOwnStrangePlant is enabled.
+		//Strange plant does not interact with any person, so we'll hide them all if hideAllStrangePlant is enabled.
 		if (npcId == NpcID.STRANGE_PLANT) {
 			return hideAllStrangePlant;
 		}
