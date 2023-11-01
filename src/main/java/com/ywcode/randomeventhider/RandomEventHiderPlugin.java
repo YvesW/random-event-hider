@@ -29,6 +29,7 @@ public class RandomEventHiderPlugin extends Plugin {
 	private static final Set<Integer> RANDOM_EVENT_NPCS = ImmutableSet.of(
 			NpcID.BEE_KEEPER_6747,
 			NpcID.CAPT_ARNAV,
+			NpcID.COUNT_CHECK_12551, NpcID.COUNT_CHECK_12552,
 			NpcID.DR_JEKYLL, NpcID.DR_JEKYLL_314,
 			NpcID.DRUNKEN_DWARF,
 			NpcID.DUNCE_6749,
@@ -80,6 +81,7 @@ public class RandomEventHiderPlugin extends Plugin {
 	private boolean hideOtherBeekeeper;
 	private boolean hideOtherCaptArnav;
 	private boolean hideOtherNiles;
+	private boolean hideOtherCountCheck;
 	private boolean hideOtherDrillDemon;
 	private boolean hideOtherDrunkenDwarf;
 	private boolean hideOtherEvilBob;
@@ -101,6 +103,7 @@ public class RandomEventHiderPlugin extends Plugin {
 	private boolean hideOtherSurpriseExam;
 	private boolean hideOwnBeekeeper;
 	private boolean hideOwnCaptArnav;
+	private boolean hideOwnCountCheck;
 	private boolean hideOwnNiles;
 	private boolean hideOwnDrillDemon;
 	private boolean hideOwnDrunkenDwarf;
@@ -177,6 +180,7 @@ public class RandomEventHiderPlugin extends Plugin {
 		hideOtherBeekeeper = config.hideOtherBeekeeper();
 		hideOtherCaptArnav = config.hideOtherCaptArnav();
 		hideOtherNiles = config.hideOtherNiles();
+		hideOtherCountCheck = config.hideOtherCountCheck();
 		hideOtherDrillDemon = config.hideOtherDrillDemon();
 		hideOtherDrunkenDwarf = config.hideOtherDrunkenDwarf();
 		hideOtherEvilBob = config.hideOtherEvilBob();
@@ -199,6 +203,7 @@ public class RandomEventHiderPlugin extends Plugin {
 		hideOwnBeekeeper = config.hideOwnBeekeeper();
 		hideOwnCaptArnav = config.hideOwnCaptArnav();
 		hideOwnNiles = config.hideOwnNiles();
+		hideOwnCountCheck = config.hideOwnCountCheck();
 		hideOwnDrillDemon = config.hideOwnDrillDemon();
 		hideOwnDrunkenDwarf = config.hideOwnDrunkenDwarf();
 		hideOwnEvilBob = config.hideOwnEvilBob();
@@ -448,10 +453,36 @@ public class RandomEventHiderPlugin extends Plugin {
 			switch (id) {
 				case NpcID.BEE_KEEPER_6747:
 					return hideOwnBeekeeper;
+				case NpcID.CAPT_ARNAV:
+					return hideOwnCaptArnav;
+				case NpcID.GILES:
+				case NpcID.GILES_5441:
+				case NpcID.MILES:
+				case NpcID.MILES_5440:
+				case NpcID.NILES:
+				case NpcID.NILES_5439:
+					return hideOwnNiles;
+				case NpcID.COUNT_CHECK_12551:
+				case NpcID.COUNT_CHECK_12552:
+					return hideOwnCountCheck;
 				case NpcID.SERGEANT_DAMIEN_6743:
 					return hideOwnDrillDemon;
+				case NpcID.DRUNKEN_DWARF:
+					return hideOwnDrunkenDwarf;
+				case NpcID.EVIL_BOB: //Evil Bob random, see https://discord.com/channels/177206626514632704/269673599554551808/1057450627774562394
+					return hideOwnEvilBob;
+				case NpcID.POSTIE_PETE_6738:
+					return hideOwnEvilTwin;
 				case NpcID.FREAKY_FORESTER_6748:
 					return hideOwnFreakyForester;
+				case NpcID.GENIE:
+				case NpcID.GENIE_327:
+					return hideOwnGenie;
+				case NpcID.LEO_6746:
+					return hideOwnGravedigger;
+				case NpcID.DR_JEKYLL:
+				case NpcID.DR_JEKYLL_314:
+					return hideOwnJekyllHyde;
 				case NpcID.FROG_5429:
 				case NpcID.FROG_5430:
 				case NpcID.FROG_5431:
@@ -460,60 +491,63 @@ public class RandomEventHiderPlugin extends Plugin {
 				case NpcID.FROG_PRINCESS:
 				case NpcID.FROG:
 					return hideOwnKissTheFrog;
-				case NpcID.GENIE:
-				case NpcID.GENIE_327:
-					return hideOwnGenie;
-				case NpcID.DR_JEKYLL:
-				case NpcID.DR_JEKYLL_314:
-					return hideOwnJekyllHyde;
-				case NpcID.EVIL_BOB:
-					return hideOwnEvilBob;
-				case NpcID.EVIL_BOB_6754:
-					return hideOwnPrisonPete;
-				case NpcID.LEO_6746:
-					return hideOwnGravedigger;
-				case NpcID.MYSTERIOUS_OLD_MAN_6750:
+				case NpcID.MYSTERIOUS_OLD_MAN_6752:
+					return hideOwnMaze; //6752 is maze https://discord.com/channels/177206626514632704/269673599554551808/1059302464622448650
+				case NpcID.MYSTERIOUS_OLD_MAN_6753:
+					return hideOwnMime; //6753 is mime https://discord.com/channels/177206626514632704/269673599554551808/1059302464622448650
+				case NpcID.MYSTERIOUS_OLD_MAN_6750: //Mysterious Old Man (Rick Turpentine style), see https://discord.com/channels/177206626514632704/269673599554551808/1057448583881826374
 				case NpcID.MYSTERIOUS_OLD_MAN_6751:
 					return hideOwnMysteriousOldMan;
-				case NpcID.MYSTERIOUS_OLD_MAN_6752:
-					return hideOwnMaze; //6752 is maze
-				case NpcID.MYSTERIOUS_OLD_MAN_6753:
-					return hideOwnMime; //6753 is mime
-				case NpcID.QUIZ_MASTER_6755:
-					return hideOwnQuizMaster;
-				case NpcID.DUNCE_6749:
-					return hideOwnSurpriseExam;
-				case NpcID.SANDWICH_LADY:
-					return hideOwnSandwichLady;
-				case NpcID.CAPT_ARNAV:
-					return hideOwnCaptArnav;
-				case NpcID.DRUNKEN_DWARF:
-					return hideOwnDrunkenDwarf;
+				case NpcID.PILLORY_GUARD:
+					return hideOwnPilloryGuard;
 				case NpcID.FLIPPA_6744:
 					return hideOwnPinball;
+				case NpcID.EVIL_BOB_6754: //Prison Pete, see https://discord.com/channels/177206626514632704/269673599554551808/1057450627774562394
+					return hideOwnPrisonPete;
+				case NpcID.QUIZ_MASTER_6755:
+					return hideOwnQuizMaster;
+				case NpcID.RICK_TURPENTINE:
+				case NpcID.RICK_TURPENTINE_376:
+					return hideOwnRickTurpentine;
+				case NpcID.SANDWICH_LADY:
+					return hideOwnSandwichLady;
+				case NpcID.DUNCE_6749:
+					return hideOwnSurpriseExam;
+			}
+		} else { //if (!OwnEvent)
+			switch (id) {
+				case NpcID.BEE_KEEPER_6747:
+					return hideOtherBeekeeper;
+				case NpcID.CAPT_ARNAV:
+					return hideOtherCaptArnav;
 				case NpcID.GILES:
 				case NpcID.GILES_5441:
 				case NpcID.MILES:
 				case NpcID.MILES_5440:
 				case NpcID.NILES:
 				case NpcID.NILES_5439:
-					return hideOwnNiles;
-				case NpcID.PILLORY_GUARD:
-					return hideOwnPilloryGuard;
-				case NpcID.POSTIE_PETE_6738:
-					return hideOwnEvilTwin;
-				case NpcID.RICK_TURPENTINE:
-				case NpcID.RICK_TURPENTINE_376:
-					return hideOwnRickTurpentine;
-			}
-		} else { //if (!OwnEvent)
-			switch (id) {
-				case NpcID.BEE_KEEPER_6747:
-					return hideOtherBeekeeper;
+					return hideOtherNiles;
+				case NpcID.COUNT_CHECK_12551:
+				case NpcID.COUNT_CHECK_12552:
+					return hideOtherCountCheck;
 				case NpcID.SERGEANT_DAMIEN_6743:
 					return hideOtherDrillDemon;
+				case NpcID.DRUNKEN_DWARF:
+					return hideOtherDrunkenDwarf;
+				case NpcID.EVIL_BOB: //Evil Bob random, see https://discord.com/channels/177206626514632704/269673599554551808/1057450627774562394
+					return hideOtherEvilBob;
+				case NpcID.POSTIE_PETE_6738:
+					return hideOtherEvilTwin;
 				case NpcID.FREAKY_FORESTER_6748:
 					return hideOtherFreakyForester;
+				case NpcID.GENIE:
+				case NpcID.GENIE_327:
+					return hideOtherGenie;
+				case NpcID.LEO_6746:
+					return hideOtherGravedigger;
+				case NpcID.DR_JEKYLL:
+				case NpcID.DR_JEKYLL_314:
+					return hideOtherJekyllHyde;
 				case NpcID.FROG_5429:
 				case NpcID.FROG_5430:
 				case NpcID.FROG_5431:
@@ -522,51 +556,29 @@ public class RandomEventHiderPlugin extends Plugin {
 				case NpcID.FROG_PRINCESS:
 				case NpcID.FROG:
 					return hideOtherKissTheFrog;
-				case NpcID.GENIE:
-				case NpcID.GENIE_327:
-					return hideOtherGenie;
-				case NpcID.DR_JEKYLL:
-				case NpcID.DR_JEKYLL_314:
-					return hideOtherJekyllHyde;
-				case NpcID.EVIL_BOB: //Evil Bob random, see https://discord.com/channels/177206626514632704/269673599554551808/1057450627774562394
-					return hideOtherEvilBob;
-				case NpcID.EVIL_BOB_6754: //Prison Pete, see https://discord.com/channels/177206626514632704/269673599554551808/1057450627774562394
-					return hideOtherPrisonPete;
-				case NpcID.LEO_6746:
-					return hideOtherGravedigger;
-				case NpcID.MYSTERIOUS_OLD_MAN_6750: //Mysterious Old Man (Rick Turpentine style), see https://discord.com/channels/177206626514632704/269673599554551808/1057448583881826374
-				case NpcID.MYSTERIOUS_OLD_MAN_6751:
-					return hideOtherMysteriousOldMan;
 				case NpcID.MYSTERIOUS_OLD_MAN_6752:
 					return hideOtherMaze; //6752 is maze https://discord.com/channels/177206626514632704/269673599554551808/1059302464622448650
 				case NpcID.MYSTERIOUS_OLD_MAN_6753:
 					return hideOtherMime; //6753 is mime https://discord.com/channels/177206626514632704/269673599554551808/1059302464622448650
-				case NpcID.QUIZ_MASTER_6755:
-					return hideOtherQuizMaster;
-				case NpcID.DUNCE_6749:
-					return hideOtherSurpriseExam;
-				case NpcID.SANDWICH_LADY:
-					return hideOtherSandwichLady;
-				case NpcID.CAPT_ARNAV:
-					return hideOtherCaptArnav;
-				case NpcID.DRUNKEN_DWARF:
-					return hideOtherDrunkenDwarf;
-				case NpcID.FLIPPA_6744:
-					return hideOtherPinball;
-				case NpcID.GILES:
-				case NpcID.GILES_5441:
-				case NpcID.MILES:
-				case NpcID.MILES_5440:
-				case NpcID.NILES:
-				case NpcID.NILES_5439:
-					return hideOtherNiles;
+				case NpcID.MYSTERIOUS_OLD_MAN_6750: //Mysterious Old Man (Rick Turpentine style), see https://discord.com/channels/177206626514632704/269673599554551808/1057448583881826374
+				case NpcID.MYSTERIOUS_OLD_MAN_6751:
+					return hideOtherMysteriousOldMan;
 				case NpcID.PILLORY_GUARD:
 					return hideOtherPilloryGuard;
-				case NpcID.POSTIE_PETE_6738:
-					return hideOtherEvilTwin;
+				case NpcID.FLIPPA_6744:
+					return hideOtherPinball;
+				case NpcID.EVIL_BOB_6754: //Prison Pete, see https://discord.com/channels/177206626514632704/269673599554551808/1057450627774562394
+					return hideOtherPrisonPete;
+				case NpcID.QUIZ_MASTER_6755:
+					return hideOtherQuizMaster;
 				case NpcID.RICK_TURPENTINE:
 				case NpcID.RICK_TURPENTINE_376:
 					return hideOtherRickTurpentine;
+				case NpcID.SANDWICH_LADY:
+					return hideOtherSandwichLady;
+				case NpcID.DUNCE_6749:
+					return hideOtherSurpriseExam;
+				//The messengers are only noted here for other people, not for
 				case NpcID.KINGS_MESSENGER:
 				case NpcID.MESSENGER:
 				case NpcID.MESSENGER_11814:

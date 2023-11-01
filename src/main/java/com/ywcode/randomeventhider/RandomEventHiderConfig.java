@@ -61,10 +61,21 @@ public interface RandomEventHiderConfig extends Config
 	}
 
 	@ConfigItem(
+			keyName = "hideOtherCountCheck",
+			name = "Hide others' Count Check",
+			description = "Hide the Count Check random event of other players",
+			position = 3,
+			section = othersRandomsCategory
+	)
+	default boolean hideOtherCountCheck() {
+		return false;
+	}
+
+	@ConfigItem(
 			keyName = "hideOtherDrillDemon",
 			name = "Hide others' Drill Demon",
 			description = "Hide the Drill Demon/Sergeant Damien random event of other players",
-			position = 3,
+			position = 4,
 			section = othersRandomsCategory
 	)
 	default boolean hideOtherDrillDemon() {
@@ -75,7 +86,7 @@ public interface RandomEventHiderConfig extends Config
 			keyName = "hideOtherDrunkenDwarf",
 			name = "Hide others' Drunken Dwarf",
 			description = "Hide the Drunken Dwarf random event of other players",
-			position = 4,
+			position = 5,
 			section = othersRandomsCategory
 	)
 	default boolean hideOtherDrunkenDwarf() {
@@ -86,7 +97,7 @@ public interface RandomEventHiderConfig extends Config
 			keyName = "hideOtherEvilBob",
 			name = "Hide others' Evil Bob",
 			description = "Hide the Evil Bob random event of other players",
-			position = 5,
+			position = 6,
 			section = othersRandomsCategory
 	)
 	default boolean hideOtherEvilBob() {
@@ -97,7 +108,7 @@ public interface RandomEventHiderConfig extends Config
 			keyName = "hideOtherEvilTwin",
 			name = "Hide others' Evil Twin",
 			description = "Hide the Evil Twin/Postie Pete/Molly random event of other players",
-			position = 6,
+			position = 7,
 			section = othersRandomsCategory
 	)
 	default boolean hideOtherEvilTwin() {
@@ -108,7 +119,7 @@ public interface RandomEventHiderConfig extends Config
 			keyName = "hideOtherFreakyForester",
 			name = "Hide others' Freaky Forester",
 			description = "Hide the Freaky Forester random event of other players",
-			position = 7,
+			position = 8,
 			section = othersRandomsCategory
 	)
 	default boolean hideOtherFreakyForester() {
@@ -119,7 +130,7 @@ public interface RandomEventHiderConfig extends Config
 			keyName = "hideOtherGenie",
 			name = "Hide others' Genie",
 			description = "Hide the Genie random event of other players",
-			position = 8,
+			position = 9,
 			section = othersRandomsCategory
 	)
 	default boolean hideOtherGenie() {
@@ -130,7 +141,7 @@ public interface RandomEventHiderConfig extends Config
 			keyName = "hideOtherGravedigger",
 			name = "Hide others' Gravedigger",
 			description = "Hide the Gravedigger/Leo random event of other players",
-			position = 9,
+			position = 10,
 			section = othersRandomsCategory
 	)
 	default boolean hideOtherGravedigger() {
@@ -141,7 +152,7 @@ public interface RandomEventHiderConfig extends Config
 			keyName = "hideOtherJekyllHyde",
 			name = "Hide others' Jekyll and Hyde",
 			description = "Hide the Jekyll and Hyde random event of other players",
-			position = 10,
+			position = 11,
 			section = othersRandomsCategory
 	)
 	default boolean hideOtherJekyllHyde() {
@@ -152,7 +163,7 @@ public interface RandomEventHiderConfig extends Config
 			keyName = "hideOtherKissTheFrog",
 			name = "Hide others' Kiss the Frog",
 			description = "Hide the Kiss the Frog random event of other players",
-			position = 11,
+			position = 12,
 			section = othersRandomsCategory
 	)
 	default boolean hideOtherKissTheFrog() {
@@ -163,7 +174,7 @@ public interface RandomEventHiderConfig extends Config
 			keyName = "hideOtherMaze",
 			name = "Hide others' Maze",
 			description = "Hide the Maze random event of other players",
-			position = 12,
+			position = 13,
 			section = othersRandomsCategory
 	)
 	default boolean hideOtherMaze() {
@@ -174,7 +185,7 @@ public interface RandomEventHiderConfig extends Config
 			keyName = "hideOtherMime",
 			name = "Hide others' Mime",
 			description = "Hide the Mime random event of other players",
-			position = 13,
+			position = 14,
 			section = othersRandomsCategory
 	)
 	default boolean hideOtherMime() {
@@ -185,7 +196,7 @@ public interface RandomEventHiderConfig extends Config
 			keyName = "hideOtherMysteriousOldMan",
 			name = "Hide others' Mysterious Old Man",
 			description = "Hide the Mysterious Old Man random event of other players",
-			position = 14,
+			position = 15,
 			section = othersRandomsCategory
 	)
 	default boolean hideOtherMysteriousOldMan() {
@@ -196,7 +207,7 @@ public interface RandomEventHiderConfig extends Config
 			keyName = "hideOtherPilloryGuard",
 			name = "Hide others' Pillory Guard",
 			description = "Hide the Pillory Guard random event of other players",
-			position = 15,
+			position = 16,
 			section = othersRandomsCategory
 	)
 	default boolean hideOtherPilloryGuard() {
@@ -207,7 +218,7 @@ public interface RandomEventHiderConfig extends Config
 			keyName = "hideOtherPinball",
 			name = "Hide others' Pinball",
 			description = "Hide the Pinball/Flippa/Tilt random event of other players",
-			position = 16,
+			position = 17,
 			section = othersRandomsCategory
 	)
 	default boolean hideOtherPinball() {
@@ -218,7 +229,7 @@ public interface RandomEventHiderConfig extends Config
 			keyName = "hideOtherPrisonPete",
 			name = "Hide others' Prison Pete",
 			description = "Hide the Prison Pete random event of other players",
-			position = 17,
+			position = 18,
 			section = othersRandomsCategory
 	)
 	default boolean hideOtherPrisonPete() {
@@ -229,7 +240,7 @@ public interface RandomEventHiderConfig extends Config
 			keyName = "hideOtherQuizMaster",
 			name = "Hide others' Quiz Master",
 			description = "Hide the Quiz Master random event of other players",
-			position = 18,
+			position = 19,
 			section = othersRandomsCategory
 	)
 	default boolean hideOtherQuizMaster() {
@@ -240,7 +251,7 @@ public interface RandomEventHiderConfig extends Config
 			keyName = "hideOtherRickTurpentine",
 			name = "Hide others' Rick Turpentine",
 			description = "Hide the Rick Turpentine random event of other players",
-			position = 19,
+			position = 20,
 			section = othersRandomsCategory
 	)
 	default boolean hideOtherRickTurpentine() {
@@ -251,7 +262,7 @@ public interface RandomEventHiderConfig extends Config
 			keyName = "hideOtherSandwichLady",
 			name = "Hide others' Sandwich Lady",
 			description = "Hide the Sandwich Lady random event of other players",
-			position = 20,
+			position = 21,
 			section = othersRandomsCategory
 	)
 	default boolean hideOtherSandwichLady() {
@@ -262,7 +273,7 @@ public interface RandomEventHiderConfig extends Config
 			keyName = "hideOtherSurpriseExam",
 			name = "Hide others' Surprise Exam",
 			description = "Hide the Surprise Exam/Dunce random event of other players",
-			position = 21,
+			position = 22,
 			section = othersRandomsCategory
 	)
 	default boolean hideOtherSurpriseExam() {
@@ -303,10 +314,21 @@ public interface RandomEventHiderConfig extends Config
 	}
 
 	@ConfigItem(
+			keyName = "hideOwnCountCheck",
+			name = "Hide your own Count Check",
+			description = "Hide your own Count Check random event",
+			position = 3,
+			section = ownRandomsCategory
+	)
+	default boolean hideOwnCountCheck() {
+		return false;
+	}
+
+	@ConfigItem(
 			keyName = "hideOwnDrillDemon",
 			name = "Hide your own Drill Demon",
 			description = "Hide your own Drill Demon/Sergeant Damien random event",
-			position = 3,
+			position = 4,
 			section = ownRandomsCategory
 	)
 	default boolean hideOwnDrillDemon() {
@@ -317,7 +339,7 @@ public interface RandomEventHiderConfig extends Config
 			keyName = "hideOwnDrunkenDwarf",
 			name = "Hide your own Drunken Dwarf",
 			description = "Hide your own Drunken Dwarf random event",
-			position = 4,
+			position = 5,
 			section = ownRandomsCategory
 	)
 	default boolean hideOwnDrunkenDwarf() {
@@ -328,7 +350,7 @@ public interface RandomEventHiderConfig extends Config
 			keyName = "hideOwnEvilBob",
 			name = "Hide your own Evil Bob",
 			description = "Hide your own Evil Bob random event",
-			position = 5,
+			position = 6,
 			section = ownRandomsCategory
 	)
 	default boolean hideOwnEvilBob() {
@@ -339,7 +361,7 @@ public interface RandomEventHiderConfig extends Config
 			keyName = "hideOwnEvilTwin",
 			name = "Hide your own Evil Twin",
 			description = "Hide your own Evil Twin/Postie Pete/Molly random event",
-			position = 6,
+			position = 7,
 			section = ownRandomsCategory
 	)
 	default boolean hideOwnEvilTwin() {
@@ -350,7 +372,7 @@ public interface RandomEventHiderConfig extends Config
 			keyName = "hideOwnFreakyForester",
 			name = "Hide your own Freaky Forester",
 			description = "Hide your own Freaky Forester random event",
-			position = 7,
+			position = 8,
 			section = ownRandomsCategory
 	)
 	default boolean hideOwnFreakyForester() {
@@ -361,7 +383,7 @@ public interface RandomEventHiderConfig extends Config
 			keyName = "hideOwnGenie",
 			name = "Hide your own Genie",
 			description = "Hide your own Genie random event",
-			position = 8,
+			position = 9,
 			section = ownRandomsCategory
 	)
 	default boolean hideOwnGenie() {
@@ -372,7 +394,7 @@ public interface RandomEventHiderConfig extends Config
 			keyName = "hideOwnGravedigger",
 			name = "Hide your own Gravedigger",
 			description = "Hide your own Gravedigger/Leo random event",
-			position = 9,
+			position = 10,
 			section = ownRandomsCategory
 	)
 	default boolean hideOwnGravedigger() {
@@ -383,7 +405,7 @@ public interface RandomEventHiderConfig extends Config
 			keyName = "hideOwnJekyllHyde",
 			name = "Hide your own Jekyll and Hyde",
 			description = "Hide your own Jekyll and Hyde random event",
-			position = 10,
+			position = 11,
 			section = ownRandomsCategory
 	)
 	default boolean hideOwnJekyllHyde() {
@@ -394,7 +416,7 @@ public interface RandomEventHiderConfig extends Config
 			keyName = "hideOwnKissTheFrog",
 			name = "Hide your own Kiss the Frog",
 			description = "Hide your own Kiss the Frog random event",
-			position = 11,
+			position = 12,
 			section = ownRandomsCategory
 	)
 	default boolean hideOwnKissTheFrog() {
@@ -405,7 +427,7 @@ public interface RandomEventHiderConfig extends Config
 			keyName = "hideOwnMaze",
 			name = "Hide your own Maze",
 			description = "Hide your own Maze random event",
-			position = 12,
+			position = 13,
 			section = ownRandomsCategory
 	)
 	default boolean hideOwnMaze() {
@@ -416,7 +438,7 @@ public interface RandomEventHiderConfig extends Config
 			keyName = "hideOwnMime",
 			name = "Hide your own Mime",
 			description = "Hide your own Mime random event",
-			position = 13,
+			position = 14,
 			section = ownRandomsCategory
 	)
 	default boolean hideOwnMime() {
@@ -427,7 +449,7 @@ public interface RandomEventHiderConfig extends Config
 			keyName = "hideOwnMysteriousOldMan",
 			name = "Hide your own Mysterious Old Man",
 			description = "Hide your own Mysterious Old Man random event",
-			position = 14,
+			position = 15,
 			section = ownRandomsCategory
 	)
 	default boolean hideOwnMysteriousOldMan() {
@@ -438,7 +460,7 @@ public interface RandomEventHiderConfig extends Config
 			keyName = "hideOwnPilloryGuard",
 			name = "Hide your own Pillory Guard",
 			description = "Hide your own Pillory Guard random event",
-			position = 15,
+			position = 16,
 			section = ownRandomsCategory
 	)
 	default boolean hideOwnPilloryGuard() {
@@ -449,7 +471,7 @@ public interface RandomEventHiderConfig extends Config
 			keyName = "hideOwnPinball",
 			name = "Hide your own Pinball",
 			description = "Hide your own Pinball/Flippa/Tilt random event",
-			position = 16,
+			position = 17,
 			section = ownRandomsCategory
 	)
 	default boolean hideOwnPinball() {
@@ -460,7 +482,7 @@ public interface RandomEventHiderConfig extends Config
 			keyName = "hideOwnPrisonPete",
 			name = "Hide your own Prison Pete",
 			description = "Hide your own Prison Pete random event",
-			position = 17,
+			position = 18,
 			section = ownRandomsCategory
 	)
 	default boolean hideOwnPrisonPete() {
@@ -471,7 +493,7 @@ public interface RandomEventHiderConfig extends Config
 			keyName = "hideOwnQuizMaster",
 			name = "Hide your own Quiz Master",
 			description = "Hide your own Quiz Master random event",
-			position = 18,
+			position = 19,
 			section = ownRandomsCategory
 	)
 	default boolean hideOwnQuizMaster() {
@@ -482,7 +504,7 @@ public interface RandomEventHiderConfig extends Config
 			keyName = "hideOwnRickTurpentine",
 			name = "Hide your own Rick Turpentine",
 			description = "Hide your own Rick Turpentine random event",
-			position = 19,
+			position = 20,
 			section = ownRandomsCategory
 	)
 	default boolean hideOwnRickTurpentine() {
@@ -493,7 +515,7 @@ public interface RandomEventHiderConfig extends Config
 			keyName = "hideOwnSandwichLady",
 			name = "Hide your own Sandwich Lady",
 			description = "Hide your own Sandwich Lady random event",
-			position = 20,
+			position = 21,
 			section = ownRandomsCategory
 	)
 	default boolean hideOwnSandwichLady() {
@@ -504,7 +526,7 @@ public interface RandomEventHiderConfig extends Config
 			keyName = "hideOwnSurpriseExam",
 			name = "Hide your own Surprise Exam",
 			description = "Hide your own Surprise Exam/Dunce random event",
-			position = 21,
+			position = 22,
 			section = ownRandomsCategory
 	)
 	default boolean hideOwnSurpriseExam() {

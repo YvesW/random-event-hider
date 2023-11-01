@@ -10,7 +10,7 @@ Also annoyed by those pesky random events? **This plugin adds the ability to hid
 - Hide others' messengers (Regicide, The Frozen Door, and Into the Tombs).
 
 As can be seen in the example config below, this plugin allows for more customizability than the default Entity Hider plugin.<br>
-For example, hiding all random events except your own Genie, Quiz Master, Sandwich Lady and Surprise Exam:
+For example, hiding all random events except your own Count Check, Genie, Quiz Master, Sandwich Lady and Surprise Exam:
 
 ![Example config others' random events](docs/img/example-config-others-random-events.PNG)<br>
 ![Example config own random events](docs/img/example-config-own-random-events.PNG)<br>
@@ -22,6 +22,9 @@ If you experience any issues or have any concerns, please reach out to YvesW via
 Thanks to Annex/Desaus for the suggestion!
 
 ## Changelog
+11-2023:
+- Added support for Count Check.
+
 09-2023:
 - Added a config option to hide other's messengers (see 'Miscellaneous').
 
