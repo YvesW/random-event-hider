@@ -578,7 +578,7 @@ public class RandomEventHiderPlugin extends Plugin {
 					return hideOtherSandwichLady;
 				case NpcID.DUNCE_6749:
 					return hideOtherSurpriseExam;
-				//The messengers are only noted here for other people, not for
+				//The messengers are the only NpcIDs that are other-specific, i.e. not also listed above as potential 'own' events
 				case NpcID.KINGS_MESSENGER:
 				case NpcID.MESSENGER:
 				case NpcID.MESSENGER_11814:
