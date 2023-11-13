@@ -77,7 +77,7 @@ public class RandomEventHiderPlugin extends Plugin {
 	private static final int FROG_REALM_REGIONID = 9802;
 
 	// ------------- Wall of config vars -------------
-	// Vars are quite heavily cached so could also just config.configKey tbh
+	// Vars are quite heavily cached so could probably just config.configKey(). However, the best practice behavior in plugins is to have a bunch of variables to store the results of the config methods, and check it in startUp/onConfigChanged. It feels redundant, but it's better than hitting the reflective calls every frame. --LlemonDuck
 	private boolean hideOtherBeekeeper;
 	private boolean hideOtherCaptArnav;
 	private boolean hideOtherNiles;
