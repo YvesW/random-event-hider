@@ -17,7 +17,7 @@ For example, hiding all random events except your own Count Check, Genie, Quiz M
 ![Example config misc](docs/img/example-config-misc.PNG)
 
 
-If you experience any issues or have any concerns, please reach out to YvesW via a GitHub Issue, by Discord direct messaging or via the RuneLite Discord by mentioning @Yves W.
+If you experience any issues or have any concerns, please reach out to YvesW via a GitHub Issue, by Discord direct messaging or via the RuneLite Discord by mentioning @``YvesW``.
 
 Thanks to Annex/Desaus for the suggestion!
 
