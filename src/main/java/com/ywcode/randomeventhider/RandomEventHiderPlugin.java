@@ -53,7 +53,7 @@ public class RandomEventHiderPlugin extends Plugin {
 	);
 
 	private static final Set<Integer> MESSENGER_NPCS = ImmutableSet.of(
-			//Regicide, The Frozen Door, and 4x Into the Tombs respectively
+			//Regicide, The Frozen Door, and 4x Into the Tombs/Varlamore respectively
 			NpcID.KINGS_MESSENGER, NpcID.MESSENGER, NpcID.MESSENGER_11814, NpcID.MESSENGER_11815, NpcID.MESSENGER_11816, NpcID.MESSENGER_11817
 	);
 
