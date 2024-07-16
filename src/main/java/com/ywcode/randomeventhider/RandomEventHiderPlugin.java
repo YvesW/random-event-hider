@@ -21,7 +21,7 @@ import java.util.*;
 @PluginDescriptor(
 		name = "Random Event Hider",
 		description = "Adds the ability to hide specific random events that interact with you or with other players.",
-		tags = {"random event,hider,random event hider,ra hider,messenger,strange plant,poof,smoke,star mining,shooting stars,forestry,count check"}
+		tags = {"random event,hider,random event hider,ra hider,messenger,strange plant,poof,smoke,star mining,shooting stars,forestry,count check,wgs,while guthix sleeps,guardian of armadyl"}
 )
 
 public class RandomEventHiderPlugin extends Plugin {
@@ -53,8 +53,14 @@ public class RandomEventHiderPlugin extends Plugin {
 	);
 
 	private static final Set<Integer> MESSENGER_NPCS = ImmutableSet.of(
-			//Regicide, The Frozen Door, and 4x Into the Tombs/Varlamore respectively
-			NpcID.KINGS_MESSENGER, NpcID.MESSENGER, NpcID.MESSENGER_11814, NpcID.MESSENGER_11815, NpcID.MESSENGER_11816, NpcID.MESSENGER_11817
+			//Regicide
+			NpcID.KINGS_MESSENGER,
+			//The Frozen Door
+			NpcID.MESSENGER,
+			//4x Into the Tombs/Varlamore
+			NpcID.MESSENGER_11814, NpcID.MESSENGER_11815, NpcID.MESSENGER_11816, NpcID.MESSENGER_11817,
+			//WGS Guardian of Armadyl messenger
+			NpcID.GUARDIAN_OF_ARMADYL_13509
 	);
 
 	private static final Set<Integer> EVENT_NPCS; // Combine sets because everything that happens for RANDOM_EVENT_NPCS should also happen for MESSENGER_NPCS and they are technically different types of NPCs.
@@ -585,6 +591,7 @@ public class RandomEventHiderPlugin extends Plugin {
 				case NpcID.MESSENGER_11815:
 				case NpcID.MESSENGER_11816:
 				case NpcID.MESSENGER_11817:
+				case NpcID.GUARDIAN_OF_ARMADYL_13509:
 					return hideOtherMessengers;
 			}
 		}

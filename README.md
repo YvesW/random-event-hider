@@ -7,7 +7,7 @@ Also annoyed by those pesky random events? **This plugin adds the ability to hid
 - Hide your own or others' random events on a per event and per interaction basis, including the Strange Plant. Don't miss out on your own Lamps, Books of knowledge and Stale baguettes!
 - Mute sounds made by random events, such as Evil Bob's meow/hiss, the Drunken Dwarf, and the Frogs.
 - Hide the 'Poof' smoke animation created by random events.
-- Hide others' messengers (Regicide, The Frozen Door, and Into the Tombs).
+- Hide others' messengers (Regicide, The Frozen Door, Into the Tombs, Varlamore, WGS).
 
 As can be seen in the example config below, this plugin allows for more customizability than the default Entity Hider plugin.<br>
 For example, hiding all random events except your own Count Check, Genie, Quiz Master, Sandwich Lady and Surprise Exam:
@@ -22,6 +22,9 @@ If you experience any issues or have any concerns, please reach out to YvesW via
 Thanks to Annex/Desaus for the suggestion!
 
 ## Changelog
+07-2024:
+- Added support for the Guardian of Armadyl messenger (WGS).
+
 11-2023:
 - Added support for Count Check.
 
