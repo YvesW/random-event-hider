@@ -65,7 +65,7 @@ public class RandomEventHiderPlugin extends Plugin {
 
 	private static final Set<Integer> EVENT_NPCS; // Combine sets because everything that happens for RANDOM_EVENT_NPCS should also happen for MESSENGER_NPCS and they are technically different types of NPCs.
 	static {
-		Set<Integer> combinedSets = new HashSet<>();
+		final Set<Integer> combinedSets = new HashSet<>();
 		combinedSets.addAll(RANDOM_EVENT_NPCS);
 		combinedSets.addAll(MESSENGER_NPCS);
 		EVENT_NPCS = Collections.unmodifiableSet(combinedSets);
@@ -140,10 +140,10 @@ public class RandomEventHiderPlugin extends Plugin {
 	private static boolean hideOtherMessengers;
 	// ------------- End of wall of config vars -------------
 
-	private static final LinkedHashMap<Integer, Integer> ownRandomsMap = new LinkedHashMap<>();
-	private static final LinkedHashMap<Integer, Integer> otherRandomsMap = new LinkedHashMap<>();
-	private static final LinkedHashMap<WorldPoint, Integer> spawnedDespawnedNpcLocations = new LinkedHashMap<>();
-	private static final LinkedHashMap<WorldPoint, Integer> spawnedDespawnedNpcLocationsDeletion = new LinkedHashMap<>();
+	private static final Map<Integer, Integer> ownRandomsMap = new LinkedHashMap<>();
+	private static final Map<Integer, Integer> otherRandomsMap = new LinkedHashMap<>();
+	private static final Map<WorldPoint, Integer> spawnedDespawnedNpcLocations = new LinkedHashMap<>();
+	private static final Map<WorldPoint, Integer> spawnedDespawnedNpcLocationsDeletion = new LinkedHashMap<>();
 	//Should maybe use a custom class RandomEvent with stuff such as npcIndex, npcId, interactingWith, npcSpawnedLocation, gameCycleSpawned, npcDespawnedLocation, gameCycleDespawned
 
 	private static boolean shouldCleanMap; //False by default
@@ -411,7 +411,7 @@ public class RandomEventHiderPlugin extends Plugin {
 		}
 	}
 
-	private boolean mapContainsFrogId(LinkedHashMap Map) {
+	private boolean mapContainsFrogId(Map<Integer, Integer> Map) {
 		return Map.containsValue(NpcID.FROG_5429) ||
 				Map.containsValue(NpcID.FROG_5430) ||
 				Map.containsValue(NpcID.FROG_5431) ||
