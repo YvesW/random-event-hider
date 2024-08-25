@@ -160,7 +160,8 @@ public class RandomEventHiderPlugin extends Plugin {
 	private static final Map<Integer, Integer> otherRandomsMap = new LinkedHashMap<>();
 	private static final Map<WorldPoint, Integer> spawnedDespawnedNpcLocations = new LinkedHashMap<>();
 	private static final Map<WorldPoint, Integer> spawnedDespawnedNpcLocationsDeletion = new LinkedHashMap<>();
-	//Should maybe use a custom class RandomEvent with stuff such as npcIndex, npcId, interactingWith, npcSpawnedLocation, gameCycleSpawned, npcDespawnedLocation, gameCycleDespawned
+	//Not sure why I used LinkedHashMaps here instead of regular HashMaps, since the order probably does not matter. Considering it was my first plugin, I might not have thought about it. There should not be a significant performance difference between HashMap and LinkedHashMap anyway, so I'm not going to touch it as testing this plugin ingame is awful.
+	//Should maybe use a custom class RandomEvent with stuff such as npcIndex, npcId, interactingWith, npcSpawnedLocation, tickCountSpawned, npcDespawnedLocation, tickCountDespawned
 
 	private static boolean shouldCleanMap; //False by default
 	private static int currentRegionID; //0 by default
@@ -302,7 +303,7 @@ public class RandomEventHiderPlugin extends Plugin {
 		int npcSpawnedId = npcSpawned.getNpc().getId();
 		int npcSpawnedIndex = npcSpawned.getNpc().getIndex();
 		Actor npcSpawnedActor = npcSpawned.getActor();
-		addPoofLocationToList(npcSpawnedId, npcSpawnedIndex, npcSpawnedActor, true);
+		addPoofLocationToMap(npcSpawnedId, npcSpawnedIndex, npcSpawnedActor);
 	}
 
 	@Subscribe
@@ -310,7 +311,7 @@ public class RandomEventHiderPlugin extends Plugin {
 		int npcDespawnedId = npcDespawned.getNpc().getId();
 		int npcDespawnedIndex = npcDespawned.getNpc().getIndex();
 		Actor npcDespawnedActor = npcDespawned.getActor();
-		addPoofLocationToList(npcDespawnedId, npcDespawnedIndex, npcDespawnedActor, false);
+		removePoofLocationFromMap(npcDespawnedId, npcDespawnedIndex, npcDespawnedActor);
 
 		if (EVENT_NPCS.contains(npcDespawnedId)) {
 			if (ownRandomsMap.containsKey(npcDespawnedIndex)) {
@@ -329,10 +330,10 @@ public class RandomEventHiderPlugin extends Plugin {
 		//However, would also have to remove frogs etc. still this way (they spawn multiple Npcs, but only one GraphicsObject Poof)!
 		currentRegionID = WorldPoint.fromLocalInstance(client, client.getLocalPlayer().getLocalLocation()).getRegionID(); //Somewhat caching this here instead of putting it into ShouldHideBasedOnMaps because then it can get called multiple times per gameCycle around e.g. prif stars.
 		if (!spawnedDespawnedNpcLocations.isEmpty()) {
-			int currentGameCycle = client.getGameCycle();
+			int currentTickCount = client.getTickCount();
 			for (Map.Entry<WorldPoint, Integer> entry : spawnedDespawnedNpcLocations.entrySet()) {
-				int npcGameCycle = entry.getValue();
-				if (currentGameCycle - npcGameCycle > 150) {
+				int npcTickCount = entry.getValue();
+				if (currentTickCount - npcTickCount > 5) {
 					spawnedDespawnedNpcLocationsDeletion.put(entry.getKey(), entry.getValue());
 					shouldCleanMap = true;
 				}
@@ -401,7 +402,11 @@ public class RandomEventHiderPlugin extends Plugin {
 		return true;
 	}
 
-	private void addPoofLocationToList(int npcId, int npcIndex, Actor npcActor, boolean NpcSpawned) {
+	private void addPoofLocationToMap(int npcId, int npcIndex, Actor npcActor) {
+		addRemovePoofLocationToMap(npcId, npcIndex, npcActor, true);
+	}
+
+	private void addRemovePoofLocationToMap(int npcId, int npcIndex, Actor npcActor, boolean NpcSpawned) {
 		//If an Npc is hidden via the plugin, the poof should happen on the NpcSpawned location (will always happen due to code to prevent Npc flashing)
 		//If an Npc is not hidden via the plugin, the poof should happen briefly on the NpcSpawned location (unless both own and other are not hidden!) and also on the NpcDespawned location
 		//Tldr: Poof always happens on the spawn location (except when both own and other are NOT hidden), but only on the despawn location if the Npc is not hidden.
@@ -409,12 +414,16 @@ public class RandomEventHiderPlugin extends Plugin {
 		if (EVENT_NPCS.contains(npcId) || npcId == NpcID.STRANGE_PLANT) {
 			WorldPoint npcWorldPoint = npcActor.getWorldLocation(); // TODO: Potentially try 	WorldPoint npcWorldPoint = WorldPoint.fromLocalInstance(client, npcActor.getLocalLocation()); at some point to fix the poof in the POH?
 			if (NpcSpawned && shouldHideBasedOnMaps(npcIndex, npcId)) {
-				spawnedDespawnedNpcLocations.put(npcWorldPoint, client.getGameCycle());
+				spawnedDespawnedNpcLocations.put(npcWorldPoint, client.getTickCount());
 			}
 			if (!NpcSpawned /*&& !shouldHideBasedOnMaps(npcIndex, npcId)*/) {
-				spawnedDespawnedNpcLocations.put(npcWorldPoint, client.getGameCycle());
+				spawnedDespawnedNpcLocations.put(npcWorldPoint, client.getTickCount());
 			}
 		}
+	}
+
+	private void removePoofLocationFromMap(int npcId, int npcIndex, Actor npcActor) {
+		addRemovePoofLocationToMap(npcId, npcIndex, npcActor, false);
 	}
 
 	private void cleanupMap() {
