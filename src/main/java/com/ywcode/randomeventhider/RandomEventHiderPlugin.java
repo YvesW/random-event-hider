@@ -28,7 +28,6 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 
 import javax.inject.Inject;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -85,7 +84,7 @@ public class RandomEventHiderPlugin extends Plugin {
 		final Set<Integer> combinedSets = new HashSet<>();
 		combinedSets.addAll(RANDOM_EVENT_NPCS);
 		combinedSets.addAll(MESSENGER_NPCS);
-		EVENT_NPCS = Collections.unmodifiableSet(combinedSets);
+		EVENT_NPCS = ImmutableSet.copyOf(combinedSets);
 	}
 
 	private static final Set<Integer> FROGS_NPCS = ImmutableSet.of(
