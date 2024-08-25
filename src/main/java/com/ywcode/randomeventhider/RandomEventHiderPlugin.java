@@ -159,11 +159,9 @@ public class RandomEventHiderPlugin extends Plugin {
 	private static final Map<Integer, Integer> ownRandomsMap = new LinkedHashMap<>();
 	private static final Map<Integer, Integer> otherRandomsMap = new LinkedHashMap<>();
 	private static final Map<WorldPoint, Integer> spawnedDespawnedNpcLocations = new LinkedHashMap<>();
-	private static final Map<WorldPoint, Integer> spawnedDespawnedNpcLocationsDeletion = new LinkedHashMap<>();
 	//Not sure why I used LinkedHashMaps here instead of regular HashMaps, since the order probably does not matter. Considering it was my first plugin, I might not have thought about it. There should not be a significant performance difference between HashMap and LinkedHashMap anyway, so I'm not going to touch it as testing this plugin ingame is awful.
 	//Should maybe use a custom class RandomEvent with stuff such as npcIndex, npcId, interactingWith, npcSpawnedLocation, tickCountSpawned, npcDespawnedLocation, tickCountDespawned
 
-	private static boolean shouldCleanMap; //False by default
 	private static int currentRegionID; //0 by default
 
 	private final Hooks.RenderableDrawListener drawListener = this::shouldDraw;
@@ -189,7 +187,6 @@ public class RandomEventHiderPlugin extends Plugin {
 		ownRandomsMap.clear();
 		otherRandomsMap.clear();
 		spawnedDespawnedNpcLocations.clear();
-		spawnedDespawnedNpcLocationsDeletion.clear();
 	}
 
 	@Subscribe
@@ -294,7 +291,6 @@ public class RandomEventHiderPlugin extends Plugin {
 			ownRandomsMap.clear();
 			otherRandomsMap.clear();
 			spawnedDespawnedNpcLocations.clear();
-			spawnedDespawnedNpcLocationsDeletion.clear();
 		}
 	}
 
@@ -329,17 +325,8 @@ public class RandomEventHiderPlugin extends Plugin {
 		//Alternative is to e.g. add the GraphicsObjects to a list and iterate through them until getPrevious == null conform conform https://discord.com/channels/301497432909414422/419891709883973642/740262232432050247 but that did not seem to work that well.
 		//However, would also have to remove frogs etc. still this way (they spawn multiple Npcs, but only one GraphicsObject Poof)!
 		currentRegionID = WorldPoint.fromLocalInstance(client, client.getLocalPlayer().getLocalLocation()).getRegionID(); //Somewhat caching this here instead of putting it into ShouldHideBasedOnMaps because then it can get called multiple times per gameCycle around e.g. prif stars.
-		if (!spawnedDespawnedNpcLocations.isEmpty()) {
-			int currentTickCount = client.getTickCount();
-			for (Map.Entry<WorldPoint, Integer> entry : spawnedDespawnedNpcLocations.entrySet()) {
-				int npcTickCount = entry.getValue();
-				if (currentTickCount - npcTickCount > 5) {
-					spawnedDespawnedNpcLocationsDeletion.put(entry.getKey(), entry.getValue());
-					shouldCleanMap = true;
-				}
-			}
-			cleanupMap(); //Alternative is to use an iterator
-		}
+		spawnedDespawnedNpcLocations.entrySet().removeIf(e -> client.getTickCount() - e.getValue() > 5);
+		//The set is backed by the map, so changes to the map are reflected in the set, and vice-versa as can be read in the EntrySet javadocs or https://stackoverflow.com/questions/1884889/iterating-over-and-removing-from-a-map/29187813#29187813
 	}
 
 	@Subscribe
@@ -424,16 +411,6 @@ public class RandomEventHiderPlugin extends Plugin {
 
 	private void removePoofLocationFromMap(int npcId, int npcIndex, Actor npcActor) {
 		addRemovePoofLocationToMap(npcId, npcIndex, npcActor, false);
-	}
-
-	private void cleanupMap() {
-		if (shouldCleanMap) {
-			for (Map.Entry<WorldPoint, Integer> entry : spawnedDespawnedNpcLocationsDeletion.entrySet()) {
-				spawnedDespawnedNpcLocations.remove(entry.getKey(), entry.getValue());
-			}
-			spawnedDespawnedNpcLocationsDeletion.clear();
-			shouldCleanMap = false;
-		}
 	}
 
 	private boolean mapContainsFrogId(Map<Integer, Integer> Map) {
