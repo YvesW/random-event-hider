@@ -325,7 +325,8 @@ public class RandomEventHiderPlugin extends Plugin {
 		//Alternative is to e.g. add the GraphicsObjects to a list and iterate through them until getPrevious == null conform conform https://discord.com/channels/301497432909414422/419891709883973642/740262232432050247 but that did not seem to work that well.
 		//However, would also have to remove frogs etc. still this way (they spawn multiple Npcs, but only one GraphicsObject Poof)!
 		currentRegionID = WorldPoint.fromLocalInstance(client, client.getLocalPlayer().getLocalLocation()).getRegionID(); //Somewhat caching this here instead of putting it into ShouldHideBasedOnMaps because then it can get called multiple times per gameCycle around e.g. prif stars.
-		spawnedDespawnedNpcLocations.entrySet().removeIf(e -> client.getTickCount() - e.getValue() > 5);
+		int currentTickCount = client.getTickCount();
+		spawnedDespawnedNpcLocations.entrySet().removeIf(e -> currentTickCount - e.getValue() > 5);
 		//The set is backed by the map, so changes to the map are reflected in the set, and vice-versa as can be read in the EntrySet javadocs or https://stackoverflow.com/questions/1884889/iterating-over-and-removing-from-a-map/29187813#29187813
 	}
 
