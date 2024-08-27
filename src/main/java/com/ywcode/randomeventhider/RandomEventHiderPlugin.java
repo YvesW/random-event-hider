@@ -326,8 +326,9 @@ public class RandomEventHiderPlugin extends Plugin {
 		//However, would also have to remove frogs etc. still this way (they spawn multiple Npcs, but only one GraphicsObject Poof)!
 		currentRegionID = WorldPoint.fromLocalInstance(client, client.getLocalPlayer().getLocalLocation()).getRegionID(); //Somewhat caching this here instead of putting it into ShouldHideBasedOnMaps because then it can get called multiple times per gameCycle around e.g. prif stars.
 		int currentTickCount = client.getTickCount();
-		spawnedDespawnedNpcLocations.entrySet().removeIf(e -> currentTickCount - e.getValue() > 5);
-		//The set is backed by the map, so changes to the map are reflected in the set, and vice-versa as can be read in the EntrySet javadocs or https://stackoverflow.com/questions/1884889/iterating-over-and-removing-from-a-map/29187813#29187813
+		spawnedDespawnedNpcLocations.values().removeIf(value -> currentTickCount - value > 5);
+		//The set is backed by the map, so changes to the map are reflected in the set, and vice-versa as can be read in the entrySet javadoc or https://stackoverflow.com/questions/1884889/iterating-over-and-removing-from-a-map/29187813#29187813
+		//The same applies to values() as can be read here: https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html#values() (removeIf traverses all elements of the collection using its iterator() and each matching element is removed using Iterator.remove())
 	}
 
 	@Subscribe
